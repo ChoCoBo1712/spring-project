@@ -3,8 +3,8 @@ package com.chocobo.esm.entity;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.Period;
 
 @Data
 public class GiftCertificate {
@@ -14,7 +14,7 @@ public class GiftCertificate {
     private String name;
     private String description;
     private BigDecimal price;
-    private Duration duration;
-    private LocalDateTime createDate;
-    private LocalDateTime lastUpdateDate;
+    private Period duration;
+    private Instant createDate;
+    private Instant lastUpdateDate;
 }

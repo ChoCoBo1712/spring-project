@@ -1,4 +1,6 @@
 dependencies {
+    implementation 'com.zaxxer:HikariCP:5.0.0'
+
     implementation 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 }

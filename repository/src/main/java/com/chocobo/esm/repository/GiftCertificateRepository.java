@@ -1,4 +1,4 @@
-package com.chocobo.project.repository;
+package com.chocobo.esm.repository;
 
 public interface GiftCertificateRepository {
 }

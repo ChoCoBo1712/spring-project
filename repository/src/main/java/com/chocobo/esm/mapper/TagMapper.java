@@ -6,8 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.chocobo.esm.mapper.TableColumn.ID;
-import static com.chocobo.esm.mapper.TableColumn.TAG_NAME;
+import static com.chocobo.esm.mapper.TableColumn.*;
 
 public class TagMapper implements RowMapper<Tag> {
 
@@ -16,7 +15,7 @@ public class TagMapper implements RowMapper<Tag> {
         Tag tag = new Tag();
 
         tag.setId(resultSet.getLong(ID));
-        tag.setName(resultSet.getString(TAG_NAME));
+        tag.setName(resultSet.getString(NAME));
 
         return tag;
     }

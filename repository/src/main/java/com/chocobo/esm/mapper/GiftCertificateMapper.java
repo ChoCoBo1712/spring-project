@@ -18,7 +18,7 @@ public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
         GiftCertificate giftCertificate = new GiftCertificate();
 
         giftCertificate.setId(resultSet.getLong(ID));
-        giftCertificate.setName(resultSet.getString(CERTIFICATE_NAME));
+        giftCertificate.setName(resultSet.getString(NAME));
         giftCertificate.setDescription(resultSet.getString(CERTIFICATE_DESCRIPTION));
         giftCertificate.setPrice(resultSet.getBigDecimal(CERTIFICATE_PRICE));
         giftCertificate.setDuration(Period.ofDays(resultSet.getInt(CERTIFICATE_DURATION)));

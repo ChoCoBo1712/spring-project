@@ -1,6 +1,6 @@
 package com.chocobo.esm.repository;
 
-public enum Ordering {
+public enum OrderingType {
     ASCENDING,
     DESCENDING,
 }

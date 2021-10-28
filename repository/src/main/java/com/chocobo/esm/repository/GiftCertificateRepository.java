@@ -2,14 +2,13 @@ package com.chocobo.esm.repository;
 
 import com.chocobo.esm.entity.GiftCertificate;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 public interface GiftCertificateRepository {
 
-    List<GiftCertificate> find(long tagId, String certificateName, BigDecimal price,
-                               Ordering orderByName, Ordering orderByCreateDate);
+    List<GiftCertificate> filter(String tagName, String certificateName, String description,
+                                 OrderingType orderByName, OrderingType orderByCreateDate);
 
     Optional<GiftCertificate> findById(long id);
 

@@ -3,19 +3,68 @@ package com.chocobo.esm.repository.impl;
 import com.chocobo.esm.entity.GiftCertificate;
 import com.chocobo.esm.entity.Tag;
 import com.chocobo.esm.repository.GiftCertificateRepository;
-import com.chocobo.esm.repository.Ordering;
+import com.chocobo.esm.repository.OrderingType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
+
+    private static final String ID_PARAM = "id";
+    private static final String NAME_PARAM = "name";
+    private static final String DESCRIPTION_PARAM = "description";
+    private static final String PRICE_PARAM = "price";
+    private static final String DURATION_PARAM = "duration";
+    private static final String CREATE_DATE_PARAM = "create_date";
+    private static final String LAST_UPDATE_DATE_PARAM = "last_update_date";
+    private static final String CERTIFICATE_ID_PARAM = "certificate_id";
+    private static final String TAG_ID_PARAM = "tag_id";
+
+    private static final String SELECT_BY_PARAMS = """
+            SELECT DISTINCT gc.id, gc.name, description, price, duration, create_date, last_update_date
+            FROM gift_certificates AS gc
+            LEFT OUTER JOIN certificates_tags AS ct ON ct.certificate_id = gc.id
+            LEFT OUTER JOIN tags ON ct.tag_id = tag.id;
+            """;
+    // TODO: 28.10.2021 complete query 
+
+    private static final String SELECT_BY_ID = """
+            SELECT id, name, description, price, duration, create_date, last_update_date
+            FROM gift_certificates
+            WHERE id = :id;
+            """;
+
+    private static final String INSERT = """
+            INSERT INTO gift_certificates (name, description, price, duration, create_date, last_update_date)
+            VALUES (:name, :description, :price, :duration, :create_date, :last_update_date);
+            """;
+
+    private static final String UPDATE = """
+            UPDATE gift_certificates
+            SET name = :name, description = :description, price = :price, duration = :duration, last_update_date = :last_update_date
+            WHERE id = :id;
+            """;
+
+    private static final String DELETE = """
+            DELETE FROM gift_certificate
+            WHERE id = :id;
+            """;
+
+    private static final String INSERT_CERTIFICATES_TAGS_RELATION = """
+            INSERT INTO certificates_tags (certificate_id, tag_id)
+            VALUES (:certificate_id, :tag_id);
+            """;
+
+    private static final String DELETE_CERTIFICATES_TAGS_RELATION = """
+            DELETE FROM certificates_tags
+            WHERE certificate_id = :certificate_id AND tag_id = :tag_id
+            """;
 
     private NamedParameterJdbcTemplate jdbcTemplate;
     private RowMapper<Tag> rowMapper;
@@ -31,7 +80,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> find(long tagId, String certificateName, BigDecimal price, Ordering orderByName, Ordering orderByCreateDate) {
+    public List<GiftCertificate> filter(String tagName, String certificateName, String description,
+                                        OrderingType orderByName, OrderingType orderByCreateDate) {
         return null;
     }
 

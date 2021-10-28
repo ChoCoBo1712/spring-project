@@ -25,35 +25,35 @@ public class TagRepositoryImpl implements TagRepository {
 
     private static final String SELECT_ALL = """
             SELECT id, name
-            FROM tag;
+            FROM tags;
             """;
 
     private static final String SELECT_BY_ID = """
             SELECT id, name
-            FROM tag
+            FROM tags
             WHERE id = :id;
             """;
 
     private static final String SELECT_BY_NAME = """
             SELECT id, name
-            FROM tag
+            FROM tags
             WHERE name = :name;
             """;
 
     private static final String SELECT_BY_CERTIFICATE_ID = """
-            SELECT tag.id, tag.name
-            FROM tag
-            INNER JOIN certificate_tag ON tag.id = certificate_tag.id_tag
-            WHERE certificate_tag.id_certificate = :certificate_id;
+            SELECT tags.id, tags.name
+            FROM tags
+            INNER JOIN certificates_tags ON tags.id = certificates_tags.tag_id
+            WHERE certificate_tags.certificate_id = :certificate_id;
             """;
 
     private static final String INSERT = """
-            INSERT INTO tag (name)
+            INSERT INTO tags (name)
             VALUES (:name);
             """;
 
     private static final String DELETE = """
-            DELETE FROM tag
+            DELETE FROM tags
             WHERE id = :id;
             """;
 
@@ -77,8 +77,8 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Optional<Tag> findById(long id) {
+        // TODO: 28.10.2021 check if it is possible to inject source
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
-
         List<Tag> tags = jdbcTemplate.query(SELECT_BY_ID, parameters, rowMapper);
         return Optional.ofNullable(tags.size() == 1 ? tags.get(0) : null);
     }
@@ -86,9 +86,9 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public Optional<Tag> findByName(String name) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(NAME_PARAM, name);
-
         List<Tag> tags = jdbcTemplate.query(SELECT_BY_NAME, parameters, rowMapper);
         return Optional.ofNullable(tags.size() == 1 ? tags.get(0) : null);
+        // TODO: 28.10.2021 size != 0
     }
 
     @Override
@@ -102,7 +102,7 @@ public class TagRepositoryImpl implements TagRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(NAME_PARAM, tag.getName());
         jdbcTemplate.update(INSERT, parameters, keyHolder);
-
+        // TODO: 28.10.2021 check for jdbc template methods returning key
         Number generatedKey = Objects.requireNonNull(keyHolder).getKey();
         return Objects.requireNonNull(generatedKey).longValue();
     }
@@ -110,7 +110,6 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public boolean delete(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
-
         return jdbcTemplate.update(DELETE, parameters) > 0;
     }
 }

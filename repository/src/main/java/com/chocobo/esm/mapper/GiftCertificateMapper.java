@@ -16,7 +16,7 @@ public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
     @Override
     public GiftCertificate mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
         GiftCertificate giftCertificate = new GiftCertificate();
-        // TODO: 28.10.2021 check for library for mapping
+
         giftCertificate.setId(resultSet.getLong(ID));
         giftCertificate.setName(resultSet.getString(NAME));
         giftCertificate.setDescription(resultSet.getString(CERTIFICATE_DESCRIPTION));

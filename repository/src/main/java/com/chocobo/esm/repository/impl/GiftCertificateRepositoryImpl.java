@@ -1,9 +1,7 @@
 package com.chocobo.esm.repository.impl;
 
 import com.chocobo.esm.entity.GiftCertificate;
-import com.chocobo.esm.entity.Tag;
 import com.chocobo.esm.repository.GiftCertificateRepository;
-import com.chocobo.esm.repository.OrderingType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,6 +10,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,6 +31,23 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String TAG_ID_PARAM = "tag_id";
     private static final String TAG_NAME_PARAM = "tag_name";
     private static final String CERTIFICATE_NAME_PARAM = "certificate_name";
+
+    private static final String WHERE_CLAUSE_PATTERN = "%s LIKE CONCAT('%%', :%s, '%%')";
+    private static final String WHERE_CLAUSE_START = "WHERE ";
+    private static final String WHERE_CLAUSE_SEPARATOR = " AND ";
+    private static final String ORDER_BY_CLAUSE_PATTERN = ":%s %s";
+    private static final String ORDER_BY_CLAUSE_START = "ORDER BY ";
+    private static final String ORDER_BY_CLAUSE_SEPARATOR = ", ";
+    private static final String SEMICOLON = ";";
+    private static final String COMMA = ",";
+    private static final String DOT = "\\.";
+    private static final String SORT_PARAM = "sortParam";
+    private static final String ASCENDING_PARAM = "asc";
+    private static final String ASCENDING = "ASC";
+    private static final String DESCENDING = "DESC";
+    private static final String TAGS_NAME = "tags.name";
+    private static final String CERTIFICATES_NAME = "gc.name";
+    private static final String CERTIFICATES_DESCRIPTION = "gc.description";
 
     private static final String SELECT_BY_PARAMS_QUERY_PATTERN = """
             SELECT DISTINCT gc.id, gc.name, description, price, duration, create_date, last_update_date
@@ -73,46 +91,15 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final BeanPropertyRowMapper<GiftCertificate> rowMapper;
 
-    public GiftCertificateRepositoryImpl(NamedParameterJdbcTemplate jdbcTemplate,
-                                         BeanPropertyRowMapper<GiftCertificate> rowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
+    public GiftCertificateRepositoryImpl(DataSource dataSource, BeanPropertyRowMapper<GiftCertificate> rowMapper) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.rowMapper = rowMapper;
     }
 
     @Override
-    public List<GiftCertificate> filter(String tagName, String certificateName, String description,
-                                        OrderingType orderByName, OrderingType orderByCreateDate) {
-        String queryString = SELECT_BY_PARAMS_QUERY_PATTERN;
+    public List<GiftCertificate> filter(String tagName, String name, String description, String sort) {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
-
-        if (tagName != null) {
-            queryString += "WHERE tags.name LIKE CONCAT('%', :" + TAG_NAME_PARAM + ", '%') ";
-            parameters.addValue(TAG_NAME_PARAM, tagName);
-        }
-
-        if (certificateName != null) {
-            queryString += "WHERE gc.name LIKE CONCAT('%', :" + CERTIFICATE_NAME_PARAM + ", '%') ";
-            parameters.addValue(CERTIFICATE_NAME_PARAM, certificateName);
-        }
-
-        if (description != null) {
-            queryString += "WHERE gc.description LIKE CONCAT('%', :" + DESCRIPTION_PARAM + ", '%') ";
-            parameters.addValue(DESCRIPTION_PARAM, description);
-        }
-
-        if (orderByName != null || orderByCreateDate != null) {
-            queryString += "ORDER BY ";
-
-            if (orderByName != null) {
-                queryString += NAME_PARAM + " " + orderByName;
-            }
-
-            if (orderByCreateDate != null) {
-                queryString += ", " + CREATE_DATE_PARAM + " " + orderByCreateDate;
-            }
-        }
-
-        queryString += ";";
+        String queryString = buildFilterQuery(tagName, name, description, sort, parameters);
         return jdbcTemplate.query(queryString, parameters, rowMapper);
     }
 
@@ -172,5 +159,48 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public boolean delete(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
         return jdbcTemplate.update(DELETE, parameters) > 0;
+    }
+
+    private String buildFilterQuery(
+            String tagName, String name, String description, String sort, MapSqlParameterSource parameters
+    ) {
+        StringBuilder query = new StringBuilder(SELECT_BY_PARAMS_QUERY_PATTERN);
+        ClauseBuilder whereClauseBuilder = new ClauseBuilder(WHERE_CLAUSE_START, WHERE_CLAUSE_SEPARATOR);
+        ClauseBuilder orderByClauseBuilder = new ClauseBuilder(ORDER_BY_CLAUSE_START, ORDER_BY_CLAUSE_SEPARATOR);
+
+        if (tagName != null) {
+            whereClauseBuilder.addPart(String.format(WHERE_CLAUSE_PATTERN, TAGS_NAME, TAG_NAME_PARAM));
+            parameters.addValue(TAG_NAME_PARAM, tagName);
+        }
+
+        if (name != null) {
+            whereClauseBuilder.addPart(String.format(WHERE_CLAUSE_PATTERN, CERTIFICATES_NAME, CERTIFICATE_NAME_PARAM));
+            parameters.addValue(CERTIFICATE_NAME_PARAM, name);
+        }
+
+        if (description != null) {
+            whereClauseBuilder.addPart(String.format(WHERE_CLAUSE_PATTERN, CERTIFICATES_DESCRIPTION, DESCRIPTION_PARAM));
+            parameters.addValue(DESCRIPTION_PARAM, description);
+        }
+
+        if (sort != null) {
+            String[] sortParams = sort.split(COMMA);
+            Iterator<String> iterator = Arrays.stream(sortParams).iterator();
+
+            int counter = 0;
+            while (iterator.hasNext()) {
+                String sortParam = iterator.next();
+                String numberedParam = SORT_PARAM + counter;
+                String[] paramOrderPair = sortParam.split(DOT);
+
+                String orderParam = Objects.equals(paramOrderPair[1], ASCENDING_PARAM) ? ASCENDING : DESCENDING;
+                orderByClauseBuilder.addPart(String.format(ORDER_BY_CLAUSE_PATTERN, numberedParam, orderParam));
+                parameters.addValue(numberedParam, paramOrderPair[0]);
+                counter++;
+            }
+        }
+
+        query.append(whereClauseBuilder.build()).append(orderByClauseBuilder.build()).append(SEMICOLON);
+        return query.toString();
     }
 }

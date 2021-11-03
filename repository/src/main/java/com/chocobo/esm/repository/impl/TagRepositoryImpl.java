@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -58,8 +59,8 @@ public class TagRepositoryImpl implements TagRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final BeanPropertyRowMapper<Tag> rowMapper;
 
-    public TagRepositoryImpl(NamedParameterJdbcTemplate jdbcTemplate, BeanPropertyRowMapper<Tag> rowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
+    public TagRepositoryImpl(DataSource dataSource, BeanPropertyRowMapper<Tag> rowMapper) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.rowMapper = rowMapper;
     }
 

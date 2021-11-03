@@ -7,8 +7,7 @@ import java.util.Optional;
 
 public interface GiftCertificateRepository {
 
-    List<GiftCertificate> filter(String tagName, String certificateName, String description,
-                                 OrderingType orderByName, OrderingType orderByCreateDate);
+    List<GiftCertificate> filter(String tagName, String name, String description, String sort);
 
     Optional<GiftCertificate> findById(long id);
 

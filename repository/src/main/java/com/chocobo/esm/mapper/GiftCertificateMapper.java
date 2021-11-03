@@ -8,7 +8,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Period;
 
-import static com.chocobo.esm.mapper.TableColumn.*;
+import static com.chocobo.esm.mapper.TableColumn.CERTIFICATE_CREATE_DATE;
+import static com.chocobo.esm.mapper.TableColumn.CERTIFICATE_DESCRIPTION;
+import static com.chocobo.esm.mapper.TableColumn.CERTIFICATE_DURATION;
+import static com.chocobo.esm.mapper.TableColumn.CERTIFICATE_LAST_UPDATE_DATE;
+import static com.chocobo.esm.mapper.TableColumn.CERTIFICATE_PRICE;
+import static com.chocobo.esm.mapper.TableColumn.ID;
+import static com.chocobo.esm.mapper.TableColumn.NAME;
 
 @Component
 public class GiftCertificateMapper implements RowMapper<GiftCertificate> {

@@ -2,7 +2,6 @@ package com.chocobo.esm.config;
 
 import com.chocobo.esm.entity.GiftCertificate;
 import com.chocobo.esm.entity.Tag;
-import com.chocobo.esm.mapper.GiftCertificateMapper;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;

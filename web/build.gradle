@@ -5,6 +5,5 @@ plugins {
 dependencies {
     implementation project(":service")
 
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 }

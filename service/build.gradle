@@ -1,3 +1,8 @@
 dependencies {
     implementation project(":repository")
+
+    implementation 'org.modelmapper:modelmapper:2.4.4'
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
 }

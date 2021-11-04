@@ -1,56 +1,62 @@
 package com.chocobo.esm.dto;
 
+import com.chocobo.esm.dto.serialization.PeriodDeserializer;
+import com.chocobo.esm.dto.serialization.PeriodSerializer;
 import com.chocobo.esm.entity.GiftCertificate;
 import com.chocobo.esm.entity.Tag;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.Period;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 public class GiftCertificateDto {
 
-    private long id;
+  private long id;
 
-    private String name;
-    private String description;
-    private BigDecimal price;
-    private Period duration;
-    private Instant createDate;
-    private Instant lastUpdateDate;
+  private String name;
 
-    private List<TagDto> tagDtos;
+  private String description;
 
-    public static GiftCertificateDto convertToDto(GiftCertificate giftCertificate, List<Tag> tags) {
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
+  private BigDecimal price;
 
-        giftCertificateDto.id = giftCertificate.getId();
-        giftCertificateDto.name = giftCertificate.getName();
-        giftCertificateDto.description = giftCertificate.getDescription();
-        giftCertificateDto.price = giftCertificate.getPrice();
-        giftCertificateDto.duration = giftCertificate.getDuration();
-        giftCertificateDto.createDate = giftCertificate.getCreateDate();
-        giftCertificateDto.lastUpdateDate = giftCertificate.getLastUpdateDate();
-        giftCertificateDto.tagDtos = tags.stream()
-                .map(TagDto::convertToDto)
-                .toList();
+  @JsonSerialize(using = PeriodSerializer.class)
+  @JsonDeserialize(using = PeriodDeserializer.class)
+  private Period duration;
 
-        return giftCertificateDto;
-    }
+  @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+      timezone = "UTC")
+  private Instant createDate;
 
-    public GiftCertificate convertToEntity() {
-        GiftCertificate giftCertificate = new GiftCertificate();
+  @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+      timezone = "UTC")
+  private Instant lastUpdateDate;
 
-        giftCertificate.setId(id);
-        giftCertificate.setName(name);
-        giftCertificate.setDescription(description);
-        giftCertificate.setPrice(price);
-        giftCertificate.setDuration(duration);
-        giftCertificate.setCreateDate(createDate);
-        giftCertificate.setLastUpdateDate(lastUpdateDate);
+  private Set<TagDto> tags;
 
-        return giftCertificate;
-    }
+  public static GiftCertificateDto convertToDto(GiftCertificate giftCertificate, Set<Tag> tags) {
+    GiftCertificateDto giftCertificateDto =
+        new ModelMapper().map(giftCertificate, GiftCertificateDto.class);
+    giftCertificateDto.tags = tags.stream()
+            .map(TagDto::convertToDto)
+            .collect(Collectors.toSet());
+
+    return giftCertificateDto;
+  }
+
+  public GiftCertificate convertToEntity() {
+    return new ModelMapper().map(this, GiftCertificate.class);
+  }
 }

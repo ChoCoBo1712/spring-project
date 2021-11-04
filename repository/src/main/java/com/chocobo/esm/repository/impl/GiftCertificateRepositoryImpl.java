@@ -2,7 +2,7 @@ package com.chocobo.esm.repository.impl;
 
 import com.chocobo.esm.entity.GiftCertificate;
 import com.chocobo.esm.repository.GiftCertificateRepository;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -11,8 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,7 +35,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String WHERE_CLAUSE_PATTERN = "%s LIKE CONCAT('%%', :%s, '%%')";
     private static final String WHERE_CLAUSE_START = "WHERE ";
     private static final String WHERE_CLAUSE_SEPARATOR = " AND ";
-    private static final String ORDER_BY_CLAUSE_PATTERN = ":%s %s";
+    private static final String ORDER_BY_CLAUSE_PATTERN = "%s %s";
     private static final String ORDER_BY_CLAUSE_START = "ORDER BY ";
     private static final String ORDER_BY_CLAUSE_SEPARATOR = ", ";
     private static final String SEMICOLON = ";";
@@ -78,6 +78,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             WHERE id = :id;
             """;
 
+    private static final String DELETE_FOREIGN_KEY = """
+            DELETE FROM certificates_tags
+            WHERE certificate_id = :id;
+            """;
+
     private static final String INSERT_CERTIFICATES_TAGS_RELATION = """
             INSERT INTO certificates_tags (certificate_id, tag_id)
             VALUES (:certificate_id, :tag_id);
@@ -89,9 +94,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             """;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final BeanPropertyRowMapper<GiftCertificate> rowMapper;
+    private final RowMapper<GiftCertificate> rowMapper;
 
-    public GiftCertificateRepositoryImpl(DataSource dataSource, BeanPropertyRowMapper<GiftCertificate> rowMapper) {
+    public GiftCertificateRepositoryImpl(DataSource dataSource, RowMapper<GiftCertificate> rowMapper) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.rowMapper = rowMapper;
     }
@@ -111,7 +116,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public void addTag(long certificateId, long tagId) {
+    public void addRelation(long certificateId, long tagId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue(CERTIFICATE_ID_PARAM, certificateId)
                 .addValue(TAG_ID_PARAM, tagId);
@@ -119,7 +124,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public void removeTag(long certificateId, long tagId) {
+    public void removeRelation(long certificateId, long tagId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue(CERTIFICATE_ID_PARAM, certificateId)
                 .addValue(TAG_ID_PARAM, tagId);
@@ -134,10 +139,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 .addValue(DESCRIPTION_PARAM, certificate.getDescription())
                 .addValue(PRICE_PARAM, certificate.getPrice())
                 .addValue(DURATION_PARAM, certificate.getDuration().getDays())
-                .addValue(CREATE_DATE_PARAM, certificate.getCreateDate())
-                .addValue(LAST_UPDATE_DATE_PARAM, certificate.getLastUpdateDate());
+                .addValue(CREATE_DATE_PARAM, Timestamp.from(certificate.getCreateDate()))
+                .addValue(LAST_UPDATE_DATE_PARAM, Timestamp.from(certificate.getLastUpdateDate()));
 
-        jdbcTemplate.update(INSERT, parameters, keyHolder);
+        jdbcTemplate.update(INSERT, parameters, keyHolder, new String[] { "id" });
         Number generatedKey = Objects.requireNonNull(keyHolder).getKey();
         return Objects.requireNonNull(generatedKey).longValue();
     }
@@ -150,8 +155,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 .addValue(DESCRIPTION_PARAM, certificate.getDescription())
                 .addValue(PRICE_PARAM, certificate.getPrice())
                 .addValue(DURATION_PARAM, certificate.getDuration().getDays())
-                .addValue(CREATE_DATE_PARAM, certificate.getCreateDate())
-                .addValue(LAST_UPDATE_DATE_PARAM, certificate.getLastUpdateDate());
+                .addValue(CREATE_DATE_PARAM, Timestamp.from(certificate.getCreateDate()))
+                .addValue(LAST_UPDATE_DATE_PARAM, Timestamp.from(certificate.getLastUpdateDate()));
         return jdbcTemplate.update(UPDATE, parameters) > 0;
     }
 
@@ -159,6 +164,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public boolean delete(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
         return jdbcTemplate.update(DELETE, parameters) > 0;
+    }
+
+    @Override
+    public void deleteForeignKey(long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
+       jdbcTemplate.update(DELETE_FOREIGN_KEY, parameters);
     }
 
     private String buildFilterQuery(
@@ -172,35 +183,35 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             whereClauseBuilder.addPart(String.format(WHERE_CLAUSE_PATTERN, TAGS_NAME, TAG_NAME_PARAM));
             parameters.addValue(TAG_NAME_PARAM, tagName);
         }
-
         if (name != null) {
             whereClauseBuilder.addPart(String.format(WHERE_CLAUSE_PATTERN, CERTIFICATES_NAME, CERTIFICATE_NAME_PARAM));
             parameters.addValue(CERTIFICATE_NAME_PARAM, name);
         }
-
         if (description != null) {
             whereClauseBuilder.addPart(String.format(WHERE_CLAUSE_PATTERN, CERTIFICATES_DESCRIPTION, DESCRIPTION_PARAM));
             parameters.addValue(DESCRIPTION_PARAM, description);
         }
-
         if (sort != null) {
-            String[] sortParams = sort.split(COMMA);
-            Iterator<String> iterator = Arrays.stream(sortParams).iterator();
-
-            int counter = 0;
-            while (iterator.hasNext()) {
-                String sortParam = iterator.next();
-                String numberedParam = SORT_PARAM + counter;
-                String[] paramOrderPair = sortParam.split(DOT);
-
-                String orderParam = Objects.equals(paramOrderPair[1], ASCENDING_PARAM) ? ASCENDING : DESCENDING;
-                orderByClauseBuilder.addPart(String.format(ORDER_BY_CLAUSE_PATTERN, numberedParam, orderParam));
-                parameters.addValue(numberedParam, paramOrderPair[0]);
-                counter++;
-            }
+            buildFilterSort(sort, orderByClauseBuilder);
         }
 
         query.append(whereClauseBuilder.build()).append(orderByClauseBuilder.build()).append(SEMICOLON);
         return query.toString();
+    }
+
+    private void buildFilterSort(String sort, ClauseBuilder orderByClauseBuilder) {
+        String[] sortParams = sort.split(COMMA);
+        Arrays.stream(sortParams).forEach(sortParam -> {
+            String[] paramOrderPair = sortParam.split(DOT);
+            String orderParam = Objects.equals(paramOrderPair[1], ASCENDING_PARAM) ? ASCENDING : DESCENDING;
+
+            String columnParam;
+            if (Objects.equals(paramOrderPair[0], NAME_PARAM)) {
+                columnParam = CERTIFICATES_NAME;
+            } else {
+                columnParam = LAST_UPDATE_DATE_PARAM;
+            }
+            orderByClauseBuilder.addPart(String.format(ORDER_BY_CLAUSE_PATTERN, columnParam, orderParam));
+        });
     }
 }

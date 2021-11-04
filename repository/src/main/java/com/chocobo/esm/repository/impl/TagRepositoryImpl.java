@@ -11,9 +11,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {
@@ -56,6 +59,11 @@ public class TagRepositoryImpl implements TagRepository {
             WHERE id = :id;
             """;
 
+    private static final String DELETE_FOREIGN_KEY = """
+            DELETE FROM certificates_tags
+            WHERE tag_id = :id;
+            """;
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final BeanPropertyRowMapper<Tag> rowMapper;
 
@@ -84,16 +92,16 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<Tag> findByCertificateId(long certificateId) {
+    public Set<Tag> findByCertificateId(long certificateId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(CERTIFICATE_ID_PARAM, certificateId);
-        return jdbcTemplate.query(SELECT_BY_CERTIFICATE_ID, parameters, rowMapper);
+        return new HashSet<>(jdbcTemplate.query(SELECT_BY_CERTIFICATE_ID, parameters, rowMapper));
     }
 
     @Override
     public long create(Tag tag) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(NAME_PARAM, tag.getName());
-        jdbcTemplate.update(INSERT, parameters, keyHolder);
+        jdbcTemplate.update(INSERT, parameters, keyHolder, new String[] { "id" });
         Number generatedKey = Objects.requireNonNull(keyHolder).getKey();
         return Objects.requireNonNull(generatedKey).longValue();
     }
@@ -102,5 +110,11 @@ public class TagRepositoryImpl implements TagRepository {
     public boolean delete(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
         return jdbcTemplate.update(DELETE, parameters) > 0;
+    }
+
+    @Override
+    public void deleteForeignKey(long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
+        jdbcTemplate.update(DELETE_FOREIGN_KEY, parameters);
     }
 }

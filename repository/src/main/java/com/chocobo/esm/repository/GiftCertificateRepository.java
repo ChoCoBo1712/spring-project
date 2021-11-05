@@ -71,11 +71,4 @@ public interface GiftCertificateRepository {
    * @return {@code true} if {@link GiftCertificate} existed and was deleted, otherwise {@code false}
    */
   boolean delete(long id);
-
-  /**
-   * Delete an existing certificate foreign key from many-to-many db table.
-   *
-   * @param id certificate id
-   */
-  void deleteForeignKey(long id);
 }

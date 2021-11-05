@@ -189,7 +189,6 @@ public class GiftCertificateService {
    */
   @Transactional
   public void delete(long id) {
-    giftCertificateRepository.deleteForeignKey(id);
     boolean deleted = giftCertificateRepository.delete(id);
 
     if (!deleted) {
@@ -217,6 +216,8 @@ public class GiftCertificateService {
       } else {
         tagId = tag.get().getId();
       }
+
+      tagDto.setId(tagId);
 
       giftCertificateRepository.addRelation(certificateId, tagId);
     });

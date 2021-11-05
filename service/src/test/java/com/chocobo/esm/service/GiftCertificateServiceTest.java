@@ -235,7 +235,6 @@ public class GiftCertificateServiceTest {
 
         certificateService.delete(certificateId);
 
-        verify(certificateRepository).deleteForeignKey(certificateId);
         verify(certificateRepository).delete(certificateId);
     }
 
@@ -246,7 +245,6 @@ public class GiftCertificateServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> certificateService.delete(certificateId));
 
-        verify(certificateRepository).deleteForeignKey(certificateId);
         verify(certificateRepository).delete(certificateId);
     }
 

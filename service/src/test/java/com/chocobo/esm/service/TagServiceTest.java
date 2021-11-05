@@ -115,7 +115,6 @@ public class TagServiceTest {
 
         tagService.delete(tagId);
 
-        verify(tagRepository).deleteForeignKey(tagId);
         verify(tagRepository).delete(tagId);
     }
 
@@ -125,8 +124,6 @@ public class TagServiceTest {
         when(tagRepository.delete(tagId)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> tagService.delete(tagId));
-
-        verify(tagRepository).deleteForeignKey(tagId);
         verify(tagRepository).delete(tagId);
     }
 

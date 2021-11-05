@@ -86,7 +86,6 @@ public class TagService {
    */
   @Transactional
   public void delete(long id) {
-    tagRepository.deleteForeignKey(id);
     boolean deleted = tagRepository.delete(id);
 
     if (!deleted) {

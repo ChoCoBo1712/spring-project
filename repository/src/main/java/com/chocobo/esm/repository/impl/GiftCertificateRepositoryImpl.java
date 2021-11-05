@@ -166,12 +166,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         return jdbcTemplate.update(DELETE, parameters) > 0;
     }
 
-    @Override
-    public void deleteForeignKey(long id) {
-        SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
-       jdbcTemplate.update(DELETE_FOREIGN_KEY, parameters);
-    }
-
     private String buildFilterQuery(
             String tagName, String name, String description, String sort, MapSqlParameterSource parameters
     ) {

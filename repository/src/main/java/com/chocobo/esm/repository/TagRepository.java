@@ -60,11 +60,4 @@ public interface TagRepository {
    * @return {@code true} if {@link Tag} existed and was deleted, otherwise {@code false}
    */
   boolean delete(long id);
-
-  /**
-   * Delete an existing tag foreign key from many-to-many db table.
-   *
-   * @param id certificate id
-   */
-  void deleteForeignKey(long id);
 }

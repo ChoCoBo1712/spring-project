@@ -111,10 +111,4 @@ public class TagRepositoryImpl implements TagRepository {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
         return jdbcTemplate.update(DELETE, parameters) > 0;
     }
-
-    @Override
-    public void deleteForeignKey(long id) {
-        SqlParameterSource parameters = new MapSqlParameterSource().addValue(ID_PARAM, id);
-        jdbcTemplate.update(DELETE_FOREIGN_KEY, parameters);
-    }
 }

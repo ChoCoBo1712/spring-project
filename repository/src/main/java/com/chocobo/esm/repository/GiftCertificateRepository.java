@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementors of this interface provide functionality for manipulating stored {@link GiftCertificate} entities.
+ * Implementors of this interface provide functionality for manipulating stored {@link
+ * GiftCertificate} entities.
  *
  * @author Evgeniy Sokolchik
  */
 public interface GiftCertificateRepository {
 
   /**
-   * Retrieve certificates according to specified parameters. All parameters are optional, so
-   * if they are not present, all certificates will be retrieved
+   * Retrieve certificates according to specified parameters. All parameters are optional, so if
+   * they are not present, all certificates will be retrieved
    *
    * @param tagName tag name (can be partly qualified)
    * @param name certificate name (can be partly qualified)
@@ -36,7 +37,7 @@ public interface GiftCertificateRepository {
    * Add relation of existing certificate and tag to many-to-many db table.
    *
    * @param certificateId certificate id
-   * @param tagId         tag id
+   * @param tagId tag id
    */
   void addRelation(long certificateId, long tagId);
 
@@ -44,7 +45,7 @@ public interface GiftCertificateRepository {
    * Remove relation of existing certificate and tag from many-to-many db table.
    *
    * @param certificateId certificate id
-   * @param tagId         tag id
+   * @param tagId tag id
    */
   void removeRelation(long certificateId, long tagId);
 
@@ -60,7 +61,8 @@ public interface GiftCertificateRepository {
    * Update an existing certificate in the storage.
    *
    * @param certificate {@link GiftCertificate} instance
-   * @return {@code true} if {@link GiftCertificate} existed and was updated, otherwise {@code false}
+   * @return {@code true} if {@link GiftCertificate} existed and was updated, otherwise {@code
+   *     false}
    */
   boolean update(GiftCertificate certificate);
 
@@ -68,7 +70,8 @@ public interface GiftCertificateRepository {
    * Delete an existing certificate from the storage.
    *
    * @param id certificate id
-   * @return {@code true} if {@link GiftCertificate} existed and was deleted, otherwise {@code false}
+   * @return {@code true} if {@link GiftCertificate} existed and was deleted, otherwise {@code
+   *     false}
    */
   boolean delete(long id);
 }

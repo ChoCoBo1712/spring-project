@@ -13,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.Period;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,9 +48,7 @@ public class GiftCertificateDto {
   public static GiftCertificateDto convertToDto(GiftCertificate giftCertificate, Set<Tag> tags) {
     GiftCertificateDto giftCertificateDto =
         new ModelMapper().map(giftCertificate, GiftCertificateDto.class);
-    giftCertificateDto.tags = tags.stream()
-            .map(TagDto::convertToDto)
-            .collect(Collectors.toSet());
+    giftCertificateDto.tags = tags.stream().map(TagDto::convertToDto).collect(Collectors.toSet());
 
     return giftCertificateDto;
   }

@@ -9,7 +9,6 @@ import com.chocobo.esm.repository.TagRepository;
 import com.chocobo.esm.validator.TagValidator;
 import com.chocobo.esm.validator.ValidationError;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,9 +34,7 @@ public class TagService {
    * @return list of {@link TagDto}
    */
   public List<TagDto> findAll() {
-    return tagRepository.findAll().stream()
-            .map(TagDto::convertToDto)
-            .toList();
+    return tagRepository.findAll().stream().map(TagDto::convertToDto).toList();
   }
 
   /**
@@ -84,7 +81,6 @@ public class TagService {
    * @param id tag id
    * @throws EntityNotFoundException in case when tag with this id does not exist
    */
-  @Transactional
   public void delete(long id) {
     boolean deleted = tagRepository.delete(id);
 

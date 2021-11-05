@@ -11,15 +11,15 @@ import static com.chocobo.esm.validator.ValidationError.INVALID_NAME;
 @Component
 public class TagValidator {
 
-  private static final String NAME_REGEX = "[a-zA-Z0-9]{1,30}";
+  private static final String NAME_REGEX = "[a-zA-Z0-9\\s]{1,30}";
 
-    public List<ValidationError> validate(String tagName) {
-        List<ValidationError> validationErrors = new ArrayList<>();
-        boolean nameIsValid = tagName != null && Pattern.matches(NAME_REGEX, tagName);
+  public List<ValidationError> validate(String tagName) {
+    List<ValidationError> validationErrors = new ArrayList<>();
+    boolean nameIsValid = tagName != null && Pattern.matches(NAME_REGEX, tagName);
 
-        if (!nameIsValid) {
-            validationErrors.add(INVALID_NAME);
-        }
-        return validationErrors;
+    if (!nameIsValid) {
+      validationErrors.add(INVALID_NAME);
     }
+    return validationErrors;
+  }
 }

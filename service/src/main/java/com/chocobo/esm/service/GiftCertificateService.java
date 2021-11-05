@@ -39,10 +39,11 @@ public class GiftCertificateService {
   private final SortStringValidator sortStringValidator;
 
   public GiftCertificateService(
-          GiftCertificateRepository giftCertificateRepository, TagRepository tagRepository,
-          GiftCertificateValidator giftCertificateValidator, TagValidator tagValidator,
-          SortStringValidator sortStringValidator
-  ) {
+      GiftCertificateRepository giftCertificateRepository,
+      TagRepository tagRepository,
+      GiftCertificateValidator giftCertificateValidator,
+      TagValidator tagValidator,
+      SortStringValidator sortStringValidator) {
     this.giftCertificateRepository = giftCertificateRepository;
     this.tagRepository = tagRepository;
     this.giftCertificateValidator = giftCertificateValidator;
@@ -51,8 +52,8 @@ public class GiftCertificateService {
   }
 
   /**
-   * Retrieve certificates according to specified parameters.
-   * All parameters are optional, so if they are not present, all certificates will be retrieved.
+   * Retrieve certificates according to specified parameters. All parameters are optional, so if
+   * they are not present, all certificates will be retrieved.
    *
    * @param tagName String specifying {@code Tag} entity name value
    * @param name String specifying {@code GiftCertificate} entity name value
@@ -187,7 +188,6 @@ public class GiftCertificateService {
    * @param id certificate id
    * @throws EntityNotFoundException in case when certificate with this id does not exist
    */
-  @Transactional
   public void delete(long id) {
     boolean deleted = giftCertificateRepository.delete(id);
 
@@ -198,28 +198,30 @@ public class GiftCertificateService {
 
   private void processTags(long certificateId, Set<TagDto> tagDtos) {
     Set<Tag> currentTags = tagRepository.findByCertificateId(certificateId);
-    currentTags.forEach(tag -> giftCertificateRepository.removeRelation(certificateId, tag.getId()));
+    currentTags.forEach(
+        tag -> giftCertificateRepository.removeRelation(certificateId, tag.getId()));
 
-    tagDtos.forEach(tagDto -> {
-      String tagName = tagDto.getName();
+    tagDtos.forEach(
+        tagDto -> {
+          String tagName = tagDto.getName();
 
-      List<ValidationError> validationErrors = tagValidator.validate(tagName);
-      if (!validationErrors.isEmpty()) {
-        throw new InvalidEntityException(validationErrors, Tag.class);
-      }
+          List<ValidationError> validationErrors = tagValidator.validate(tagName);
+          if (!validationErrors.isEmpty()) {
+            throw new InvalidEntityException(validationErrors, Tag.class);
+          }
 
-      Optional<Tag> tag = tagRepository.findByName(tagName);
-      long tagId;
-      if (tag.isEmpty()) {
-        Tag newTag = tagDto.convertToEntity();
-        tagId = tagRepository.create(newTag);
-      } else {
-        tagId = tag.get().getId();
-      }
+          Optional<Tag> tag = tagRepository.findByName(tagName);
+          long tagId;
+          if (tag.isEmpty()) {
+            Tag newTag = tagDto.convertToEntity();
+            tagId = tagRepository.create(newTag);
+          } else {
+            tagId = tag.get().getId();
+          }
 
-      tagDto.setId(tagId);
+          tagDto.setId(tagId);
 
-      giftCertificateRepository.addRelation(certificateId, tagId);
-    });
+          giftCertificateRepository.addRelation(certificateId, tagId);
+        });
   }
 }

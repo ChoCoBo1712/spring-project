@@ -38,8 +38,8 @@ public class GiftCertificateController {
   }
 
   /**
-   * Retrieve certificates according to specified parameters.
-   * All parameters are optional, so if they are not present, all certificates will be retrieved.
+   * Retrieve certificates according to specified parameters. All parameters are optional, so if
+   * they are not present, all certificates will be retrieved.
    *
    * @param tagName String specifying {@code Tag} entity name value
    * @param name String specifying {@code GiftCertificate} entity name value
@@ -77,10 +77,12 @@ public class GiftCertificateController {
    *
    * @param certificateDto {@link GiftCertificateDto} instance
    * @throws InvalidEntityException in case when passed DTO object contains invalid data
-   * @return JSON {@link ResponseEntity} object that contains created {@link GiftCertificateDto} object
+   * @return JSON {@link ResponseEntity} object that contains created {@link GiftCertificateDto}
+   *     object
    */
   @PostMapping
-  public ResponseEntity<GiftCertificateDto> createCertificate(@RequestBody GiftCertificateDto certificateDto) {
+  public ResponseEntity<GiftCertificateDto> createCertificate(
+      @RequestBody GiftCertificateDto certificateDto) {
     GiftCertificateDto createdCertificate = giftCertificateService.create(certificateDto);
     return new ResponseEntity<>(createdCertificate, CREATED);
   }
@@ -88,11 +90,12 @@ public class GiftCertificateController {
   /**
    * Update an existing certificate.
    *
-   * @param id             certificate id
+   * @param id certificate id
    * @param certificateDto {@link GiftCertificateDto} instance
    * @throws EntityNotFoundException in case when certificate with this id does not exist
    * @throws InvalidEntityException in case when passed DTO object contains invalid data
-   * @return JSON {@link ResponseEntity} object that contains updated {@link GiftCertificateDto} object
+   * @return JSON {@link ResponseEntity} object that contains updated {@link GiftCertificateDto}
+   *     object
    */
   @PatchMapping("/{id}")
   public ResponseEntity<GiftCertificateDto> updateCertificate(

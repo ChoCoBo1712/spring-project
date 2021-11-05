@@ -13,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.lang.NonNullApi;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -23,8 +22,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -66,16 +66,14 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
   private static final int INVALID_MEDIA_TYPE_CODE = 41501;
   private static final int INVALID_BODY_FORMAT_CODE = 40004;
 
-  private static final String ERROR_SEPARATOR = ", ";
   private static final String ERROR_MESSAGE = "errorMessage";
+  private static final String ERRORS = "errors";
   private static final String ERROR_CODE = "errorCode";
 
   private final ResourceBundleMessageSource messageSource;
-  private final ResourceBundleMessageSource codeSource;
 
-  public ApplicationExceptionHandler(ResourceBundleMessageSource messageSource, ResourceBundleMessageSource codeSource) {
+  public ApplicationExceptionHandler(ResourceBundleMessageSource messageSource) {
     this.messageSource = messageSource;
-    this.codeSource = codeSource;
   }
 
   @Override
@@ -118,27 +116,28 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
   @ExceptionHandler(InvalidEntityException.class)
   public ResponseEntity<Object> handleInvalidEntity(InvalidEntityException e) {
     logger.error("Current entity is invalid " + e.getCauseEntity().getSimpleName());
-    Iterator<ValidationError> iterator = e.getValidationErrors().iterator();
-    StringBuilder errorDetails = new StringBuilder();
+    List<ValidationError> validationErrors = e.getValidationErrors();
 
-    while (iterator.hasNext()) {
-      ValidationError error = iterator.next();
-      errorDetails.append(switch (error) {
-        case INVALID_NAME -> getErrorMessageFromSource(INVALID_NAME_MESSAGE);
-        case INVALID_DESCRIPTION -> getErrorMessageFromSource(INVALID_DESCRIPTION_MESSAGE);
-        case INVALID_PRICE -> getErrorMessageFromSource(INVALID_PRICE_MESSAGE);
-        case INVALID_DURATION -> getErrorMessageFromSource(INVALID_DURATION_MESSAGE);
-      });
-
-      if (iterator.hasNext()) {
-        errorDetails.append(ERROR_SEPARATOR);
-      }
+    List<String> errorMessages = new ArrayList<>();
+    for (ValidationError validationError : validationErrors) {
+      errorMessages.add(
+              switch (validationError) {
+                case INVALID_NAME -> getErrorMessageFromSource(INVALID_NAME_MESSAGE);
+                case INVALID_DESCRIPTION -> getErrorMessageFromSource(INVALID_DESCRIPTION_MESSAGE);
+                case INVALID_PRICE -> getErrorMessageFromSource(INVALID_PRICE_MESSAGE);
+                case INVALID_DURATION -> getErrorMessageFromSource(INVALID_DURATION_MESSAGE);
+              }
+      );
     }
 
     Class<?> causeEntity = e.getCauseEntity();
     String errorMessage =
-            String.format(getErrorMessageFromSource(INVALID_ENTITY_MESSAGE), causeEntity.getSimpleName(), errorDetails);
-    return buildErrorResponseEntity(INVALID_ENTITY_CODE, errorMessage, BAD_REQUEST);
+            String.format(getErrorMessageFromSource(INVALID_ENTITY_MESSAGE), causeEntity.getSimpleName());
+    Map<String, Object> body = new HashMap<>();
+    body.put(ERROR_MESSAGE, errorMessage);
+    body.put(ERRORS, errorMessages);
+    body.put(ERROR_CODE, INVALID_ENTITY_CODE);
+    return new ResponseEntity<>(body, BAD_REQUEST);
   }
 
   @Override

@@ -84,6 +84,5 @@ public class TagController {
   public ResponseEntity<Void> deleteTag(@PathVariable("id") long id) {
     tagService.delete(id);
     return new ResponseEntity<>(NO_CONTENT);
-    // TODO: 11/4/2021 idempotent
   }
 }

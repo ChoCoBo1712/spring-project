@@ -64,7 +64,7 @@ public class TagServiceTest {
     }
 
     @Test
-    void testFindByIdWhenTagNotFound() {
+    void testFindByIdEntityNotFound() {
         long tagId = 1;
         when(tagRepository.findById(tagId)).thenReturn(Optional.empty());
 
@@ -86,7 +86,7 @@ public class TagServiceTest {
     }
 
     @Test
-    void testCreateWhenTagInvalid() {
+    void testCreateInvalidEntity() {
         String tagName = "";
         TagDto tagDto = provideTagDto();
         tagDto.setName(tagName);
@@ -98,7 +98,7 @@ public class TagServiceTest {
     }
 
     @Test
-    void testCreateWhenTagAlreadyExists() {
+    void testCreateEntityAlreadyExists() {
         TagDto tagDto = provideTagDto();
         Tag tag = provideTag();
 
@@ -115,16 +115,18 @@ public class TagServiceTest {
 
         tagService.delete(tagId);
 
+        verify(tagRepository).deleteForeignKey(tagId);
         verify(tagRepository).delete(tagId);
     }
 
     @Test
-    void testDeleteWhenTagNotFound() {
+    void testDeleteEntityNotFound() {
         int tagId = 1;
         when(tagRepository.delete(tagId)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> tagService.delete(tagId));
 
+        verify(tagRepository).deleteForeignKey(tagId);
         verify(tagRepository).delete(tagId);
     }
 

@@ -11,7 +11,6 @@ public class SortStringValidator {
             "(((?i)name(?-i)|(?i)lastUpdateDate(?-i)).((?i)asc(?-i)|(?i)desc(?-i)),?)+";
 
     public boolean validate(String sort) {
-
         return sort == null || Pattern.matches(SORT_REGEX, sort);
     }
 }

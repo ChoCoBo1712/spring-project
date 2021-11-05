@@ -99,10 +99,6 @@ public class GiftCertificateServiceTest {
 
     @Test
     void testFilterInvalidSortString() {
-        List<GiftCertificateDto> expectedDtoList = new ArrayList<>() {{
-            add(provideCertificateDto());
-        }};
-
         String tagName = "tag";
         String name = "certificate";
         String description = "description";

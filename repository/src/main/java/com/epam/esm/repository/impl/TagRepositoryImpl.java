@@ -58,11 +58,6 @@ public class TagRepositoryImpl implements TagRepository {
             WHERE id = :id;
             """;
 
-    private static final String DELETE_FOREIGN_KEY = """
-            DELETE FROM certificates_tags
-            WHERE tag_id = :id;
-            """;
-
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final BeanPropertyRowMapper<Tag> rowMapper;
 

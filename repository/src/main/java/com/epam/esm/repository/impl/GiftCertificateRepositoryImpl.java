@@ -78,11 +78,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             WHERE id = :id;
             """;
 
-    private static final String DELETE_FOREIGN_KEY = """
-            DELETE FROM certificates_tags
-            WHERE certificate_id = :id;
-            """;
-
     private static final String INSERT_CERTIFICATES_TAGS_RELATION = """
             INSERT INTO certificates_tags (certificate_id, tag_id)
             VALUES (:certificate_id, :tag_id);

@@ -9,6 +9,8 @@ import com.epam.esm.exception.InvalidEntityException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.validator.TagValidator;
 import com.epam.esm.validator.ValidationError;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +21,13 @@ import java.util.List;
  * @author Evgeniy Sokolchik
  */
 @Service
+@RequiredArgsConstructor
 public class TagService {
 
+  @NonNull
   private final TagRepository tagRepository;
+  @NonNull
   private final TagValidator tagValidator;
-
-  public TagService(TagRepository tagRepository, TagValidator tagValidator) {
-    this.tagRepository = tagRepository;
-    this.tagValidator = tagValidator;
-  }
 
   /**
    * Retrieve all tags.

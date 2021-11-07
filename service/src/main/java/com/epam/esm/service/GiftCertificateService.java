@@ -15,6 +15,8 @@ import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.SortStringValidator;
 import com.epam.esm.validator.TagValidator;
 import com.epam.esm.validator.ValidationError;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,26 +34,19 @@ import java.util.stream.Collectors;
  * @author Evgeniy Sokolchik
  */
 @Service
+@RequiredArgsConstructor
 public class GiftCertificateService {
 
+  @NonNull
   private final GiftCertificateRepository giftCertificateRepository;
+  @NonNull
   private final TagRepository tagRepository;
+  @NonNull
   private final GiftCertificateValidator giftCertificateValidator;
+  @NonNull
   private final TagValidator tagValidator;
+  @NonNull
   private final SortStringValidator sortStringValidator;
-
-  public GiftCertificateService(
-      GiftCertificateRepository giftCertificateRepository,
-      TagRepository tagRepository,
-      GiftCertificateValidator giftCertificateValidator,
-      TagValidator tagValidator,
-      SortStringValidator sortStringValidator) {
-    this.giftCertificateRepository = giftCertificateRepository;
-    this.tagRepository = tagRepository;
-    this.giftCertificateValidator = giftCertificateValidator;
-    this.tagValidator = tagValidator;
-    this.sortStringValidator = sortStringValidator;
-  }
 
   /**
    * Retrieve certificates according to specified parameters. All parameters are optional, so if

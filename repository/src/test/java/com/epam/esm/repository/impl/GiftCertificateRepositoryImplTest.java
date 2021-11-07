@@ -139,7 +139,7 @@ class GiftCertificateRepositoryImplTest {
 
   @Test
   void testAddRelation() {
-    certificateRepository.addRelation(2, 2);
+    certificateRepository.addCertificateTagRelation(2, 2);
     Set<Tag> tags = tagRepository.findByCertificateId(2);
 
     assertEquals(1, tags.size());
@@ -147,7 +147,7 @@ class GiftCertificateRepositoryImplTest {
 
   @Test
   void testRemoveRelation() {
-    certificateRepository.removeRelation(1, 1);
+    certificateRepository.removeCertificateTagRelation(1, 1);
     Set<Tag> tags = tagRepository.findByCertificateId(1);
 
     assertTrue(tags.isEmpty());

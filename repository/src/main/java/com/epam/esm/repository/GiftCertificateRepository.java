@@ -39,7 +39,7 @@ public interface GiftCertificateRepository {
    * @param certificateId certificate id
    * @param tagId tag id
    */
-  void addRelation(long certificateId, long tagId);
+  void addCertificateTagRelation(long certificateId, long tagId);
 
   /**
    * Remove relation of existing certificate and tag from many-to-many db table.
@@ -47,7 +47,7 @@ public interface GiftCertificateRepository {
    * @param certificateId certificate id
    * @param tagId tag id
    */
-  void removeRelation(long certificateId, long tagId);
+  void removeCertificateTagRelation(long certificateId, long tagId);
 
   /**
    * Create a new certificate in the storage.

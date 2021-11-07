@@ -199,7 +199,7 @@ public class GiftCertificateService {
   private void processTags(long certificateId, Set<TagDto> tagDtos) {
     Set<Tag> currentTags = tagRepository.findByCertificateId(certificateId);
     currentTags.forEach(
-        tag -> giftCertificateRepository.removeRelation(certificateId, tag.getId()));
+        tag -> giftCertificateRepository.removeCertificateTagRelation(certificateId, tag.getId()));
 
     tagDtos.forEach(
         tagDto -> {
@@ -221,7 +221,7 @@ public class GiftCertificateService {
 
           tagDto.setId(tagId);
 
-          giftCertificateRepository.addRelation(certificateId, tagId);
+          giftCertificateRepository.addCertificateTagRelation(certificateId, tagId);
         });
   }
 }

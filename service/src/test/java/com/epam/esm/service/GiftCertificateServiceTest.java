@@ -188,7 +188,7 @@ public class GiftCertificateServiceTest {
     verify(certificateRepository).update(capturedCertificate);
     verify(tagValidator).validate(tagName);
     verify(tagRepository).findByName(tagName);
-    verify(certificateRepository).addRelation(certificateId, tagId);
+    verify(certificateRepository).addCertificateTagRelation(certificateId, tagId);
   }
 
   @Test

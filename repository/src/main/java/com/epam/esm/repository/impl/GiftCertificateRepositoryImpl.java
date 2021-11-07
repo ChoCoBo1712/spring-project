@@ -116,7 +116,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public void addRelation(long certificateId, long tagId) {
+    public void addCertificateTagRelation(long certificateId, long tagId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue(CERTIFICATE_ID_PARAM, certificateId)
                 .addValue(TAG_ID_PARAM, tagId);
@@ -124,7 +124,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public void removeRelation(long certificateId, long tagId) {
+    public void removeCertificateTagRelation(long certificateId, long tagId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue(CERTIFICATE_ID_PARAM, certificateId)
                 .addValue(TAG_ID_PARAM, tagId);

@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.dto.converter.TagConverter;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.EntityAlreadyExistsException;
 import com.epam.esm.exception.EntityNotFoundException;
@@ -34,7 +35,7 @@ public class TagService {
    * @return list of {@link TagDto}
    */
   public List<TagDto> findAll() {
-    return tagRepository.findAll().stream().map(TagDto::convertToDto).toList();
+    return tagRepository.findAll().stream().map(TagConverter::convertToDto).toList();
   }
 
   /**
@@ -46,7 +47,7 @@ public class TagService {
    */
   public TagDto findById(long id) {
     Tag tag = tagRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
-    return TagDto.convertToDto(tag);
+    return TagConverter.convertToDto(tag);
   }
 
   /**
@@ -58,7 +59,7 @@ public class TagService {
    * @return {@link TagDto} object that represents created tag
    */
   public TagDto create(TagDto tagDto) {
-    Tag tag = tagDto.convertToEntity();
+    Tag tag = TagConverter.convertToEntity(tagDto);
 
     List<ValidationError> validationErrors = tagValidator.validate(tag.getName());
     if (!validationErrors.isEmpty()) {

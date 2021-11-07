@@ -2,6 +2,8 @@ package com.epam.esm.service;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.dto.converter.GiftCertificateConverter;
+import com.epam.esm.dto.converter.TagConverter;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.EntityNotFoundException;
@@ -76,7 +78,7 @@ public class GiftCertificateService {
             giftCertificate -> {
               long id = giftCertificate.getId();
               Set<Tag> tags = tagRepository.findByCertificateId(id);
-              return GiftCertificateDto.convertToDto(giftCertificate, tags);
+              return GiftCertificateConverter.convertToDto(giftCertificate, tags);
             })
         .toList();
   }
@@ -92,7 +94,7 @@ public class GiftCertificateService {
     GiftCertificate certificate =
         giftCertificateRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
     Set<Tag> tags = tagRepository.findByCertificateId(id);
-    return GiftCertificateDto.convertToDto(certificate, tags);
+    return GiftCertificateConverter.convertToDto(certificate, tags);
   }
 
   /**
@@ -110,7 +112,7 @@ public class GiftCertificateService {
     certificateDto.setCreateDate(createDate);
     certificateDto.setLastUpdateDate(createDate);
 
-    GiftCertificate certificate = certificateDto.convertToEntity();
+    GiftCertificate certificate = GiftCertificateConverter.convertToEntity(certificateDto);
     List<ValidationError> validationErrors = giftCertificateValidator.validate(certificate);
     if (!validationErrors.isEmpty()) {
       throw new InvalidEntityException(validationErrors, GiftCertificate.class);
@@ -174,12 +176,12 @@ public class GiftCertificateService {
     Set<Tag> tags;
     if (tagDtos != null) {
       processTags(certificate.getId(), tagDtos);
-      tags = tagDtos.stream().map(TagDto::convertToEntity).collect(Collectors.toSet());
+      tags = tagDtos.stream().map(TagConverter::convertToEntity).collect(Collectors.toSet());
     } else {
       tags = Collections.emptySet();
     }
 
-    return GiftCertificateDto.convertToDto(certificate, tags);
+    return GiftCertificateConverter.convertToDto(certificate, tags);
   }
 
   /**
@@ -213,7 +215,7 @@ public class GiftCertificateService {
           Optional<Tag> tag = tagRepository.findByName(tagName);
           long tagId;
           if (tag.isEmpty()) {
-            Tag newTag = tagDto.convertToEntity();
+            Tag newTag = TagConverter.convertToEntity(tagDto);
             tagId = tagRepository.create(newTag);
           } else {
             tagId = tag.get().getId();

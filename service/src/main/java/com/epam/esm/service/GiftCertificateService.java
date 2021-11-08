@@ -119,6 +119,8 @@ public class GiftCertificateService {
     if (tagDtos != null) {
       processTags(certificateId, tagDtos);
       certificateDto.setTags(tagDtos);
+    } else {
+      certificateDto.setTags(Collections.emptySet());
     }
 
     return certificateDto;

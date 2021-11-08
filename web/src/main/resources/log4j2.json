@@ -1,0 +1,55 @@
+{
+  "configuration": {
+    "name": "Default",
+    "properties": {
+      "property": [
+        {
+          "name": "pattern_console",
+          "value": "%d %5level %c{1} - %msg%n"
+        },
+        {
+          "name": "pattern_file",
+          "value": "%d %5level %c{5} - %msg%n"
+        }
+      ]
+    },
+    "appenders": {
+      "Console": {
+        "name": "Console",
+        "target": "SYSTEM_OUT",
+        "PatternLayout": {
+          "pattern": "${pattern_console}"
+        }
+      },
+      "RollingFile": {
+        "name": "File",
+        "fileName": "${sys:catalina.home}/logs/last.log",
+        "filePattern": "${sys:catalina.home}/logs/${date:MM.yyyy}/array-%d{dd.MM.yyyy}-%i.log.gz",
+        "PatternLayout": {
+          "pattern": "${pattern_file}"
+        },
+        "policies": {
+          "SizeBasedTriggeringPolicy": {
+            "size": "100 kB"
+          }
+        },
+        "DefaultRolloverStrategy": {
+          "max": "10"
+        }
+      }
+    },
+    "loggers": {
+      "root": {
+        "level": "debug",
+        "AppenderRef": [
+          {
+            "ref": "Console"
+          },
+          {
+            "ref": "File"
+          }
+        ]
+      }
+    }
+  }
+}

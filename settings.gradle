@@ -1,2 +1,5 @@
 rootProject.name = 'spring-project'
+include 'web'
+include 'service'
+include 'repository'
 

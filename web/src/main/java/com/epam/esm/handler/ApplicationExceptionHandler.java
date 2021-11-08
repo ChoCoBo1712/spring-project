@@ -7,6 +7,7 @@ import com.epam.esm.exception.InvalidSortStringException;
 import com.epam.esm.validator.ValidationError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
@@ -54,6 +55,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
   private static final String INVALID_MEDIA_TYPE_MESSAGE = "invalid_media_type";
   private static final String INVALID_BODY_FORMAT_MESSAGE = "invalid_body_format";
   private static final String INVALID_SORT_PARAMETER_MESSAGE = "invalid_sort_parameter";
+  private static final String INVALID_ARGUMENT_TYPE_MESSAGE = "invalid_argument_type";
 
   private static final int RESOURCE_NOT_FOUND_CODE = 40401;
   private static final int ENTITY_NOT_FOUND_CODE = 40402;
@@ -65,6 +67,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
   private static final int INVALID_PARAMS_CODE = 40003;
   private static final int INVALID_MEDIA_TYPE_CODE = 41501;
   private static final int INVALID_BODY_FORMAT_CODE = 40004;
+  private static final int INVALID_ARGUMENT_TYPE_CODE = 40005;
 
   private static final String ERROR_MESSAGE = "errorMessage";
   private static final String ERRORS = "errors";
@@ -167,9 +170,16 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
   @Override
   public ResponseEntity<Object> handleHttpMessageNotReadable(
           HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-    logger.error("Current request message is not readable: ", ex);
+    logger.error("Current request argument type is mismatched: ", ex);
     String errorMessage = getErrorMessageFromSource(INVALID_BODY_FORMAT_MESSAGE);
     return buildErrorResponseEntity(INVALID_BODY_FORMAT_CODE, errorMessage, BAD_REQUEST);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    logger.error("Current request message is not readable: ", ex);
+    String errorMessage = getErrorMessageFromSource(INVALID_ARGUMENT_TYPE_MESSAGE);
+    return buildErrorResponseEntity(INVALID_ARGUMENT_TYPE_CODE, errorMessage, BAD_REQUEST);
   }
 
   private String getErrorMessageFromSource(String errorMessageName) {

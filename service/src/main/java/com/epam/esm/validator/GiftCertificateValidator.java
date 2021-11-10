@@ -61,7 +61,7 @@ public class GiftCertificateValidator {
   }
 
   private boolean validatePrice(BigDecimal price) {
-    return price.compareTo(BigDecimal.ZERO) > PRICE_MIN_VALUE;
+    return price.compareTo(BigDecimal.ZERO) >= PRICE_MIN_VALUE;
   }
 
   private boolean validateDuration(Period duration) {

@@ -1,8 +1,10 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.converter.PeriodConverter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,10 +29,16 @@ public class GiftCertificate {
   private long id;
 
   private String name;
+
   private String description;
+
   private BigDecimal price;
+
+  @Convert(converter = PeriodConverter.class)
   private Period duration;
+
   private Instant createDate;
+
   private Instant lastUpdateDate;
 
   @ManyToMany

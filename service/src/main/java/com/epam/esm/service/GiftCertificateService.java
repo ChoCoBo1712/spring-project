@@ -22,7 +22,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -71,8 +73,7 @@ public class GiftCertificateService {
     return giftCertificates.stream()
         .map(
             giftCertificate -> {
-              long id = giftCertificate.getId();
-              Set<Tag> tags = tagRepository.findByCertificateId(id);
+              Set<Tag> tags = giftCertificate.getTags();
               return GiftCertificateConverter.convertToDto(giftCertificate, tags);
             })
         .toList();
@@ -88,8 +89,7 @@ public class GiftCertificateService {
   public GiftCertificateDto findById(long id) {
     GiftCertificate certificate =
         giftCertificateRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
-    Set<Tag> tags = tagRepository.findByCertificateId(id);
-    return GiftCertificateConverter.convertToDto(certificate, tags);
+    return GiftCertificateConverter.convertToDto(certificate, certificate.getTags());
   }
 
   /**
@@ -99,7 +99,7 @@ public class GiftCertificateService {
    * @throws InvalidEntityException in case when passed DTO object contains invalid data
    * @return {@link GiftCertificateDto} object that represents created {@link GiftCertificate}
    */
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  @Transactional
   public GiftCertificateDto create(GiftCertificateDto certificateDto) {
     Set<TagDto> tagDtos = certificateDto.getTags();
 
@@ -113,17 +113,12 @@ public class GiftCertificateService {
       throw new InvalidEntityException(validationErrors, GiftCertificate.class);
     }
 
-    long certificateId = giftCertificateRepository.create(certificate);
-    certificateDto.setId(certificateId);
-
     if (tagDtos != null) {
-      processTags(certificateId, tagDtos);
-      certificateDto.setTags(tagDtos);
-    } else {
-      certificateDto.setTags(Collections.emptySet());
+      processTags(certificate, tagDtos);
     }
 
-    return certificateDto;
+    certificate = giftCertificateRepository.create(certificate);
+    return GiftCertificateConverter.convertToDto(certificate, certificate.getTags());
   }
 
   /**
@@ -165,20 +160,15 @@ public class GiftCertificateService {
     }
 
     Set<TagDto> tagDtos = certificateDto.getTags();
+    if (tagDtos != null) {
+      processTags(certificate, tagDtos);
+    }
 
     Instant lastUpdateDate = Instant.now();
     certificate.setLastUpdateDate(lastUpdateDate);
     giftCertificateRepository.update(certificate);
 
-    Set<Tag> tags;
-    if (tagDtos != null) {
-      processTags(certificate.getId(), tagDtos);
-      tags = tagDtos.stream().map(TagConverter::convertToEntity).collect(Collectors.toSet());
-    } else {
-      tags = Collections.emptySet();
-    }
-
-    return GiftCertificateConverter.convertToDto(certificate, tags);
+    return GiftCertificateConverter.convertToDto(certificate, certificate.getTags());
   }
 
   /**
@@ -187,40 +177,32 @@ public class GiftCertificateService {
    * @param id certificate id
    * @throws EntityNotFoundException in case when certificate with this id does not exist
    */
+  @Transactional
   public void delete(long id) {
-    boolean deleted = giftCertificateRepository.delete(id);
-
-    if (!deleted) {
-      throw new EntityNotFoundException(id);
-    }
+    GiftCertificate certificate = giftCertificateRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+    giftCertificateRepository.delete(certificate);
   }
 
-  private void processTags(long certificateId, Set<TagDto> tagDtos) {
-    Set<Tag> currentTags = tagRepository.findByCertificateId(certificateId);
-    currentTags.forEach(
-        tag -> giftCertificateRepository.removeCertificateTagRelation(certificateId, tag.getId()));
+  private void processTags(GiftCertificate certificate, Set<TagDto> tagDtos) {
+    Set<Tag> tags = new HashSet<>();
 
-    tagDtos.forEach(
-        tagDto -> {
-          String tagName = tagDto.getName();
+    for (TagDto tagDto : tagDtos) {
+      String tagName = tagDto.getName();
+      List<ValidationError> validationErrors = tagValidator.validate(tagName);
+      if (!validationErrors.isEmpty()) {
+        throw new InvalidEntityException(validationErrors, Tag.class);
+      }
 
-          List<ValidationError> validationErrors = tagValidator.validate(tagName);
-          if (!validationErrors.isEmpty()) {
-            throw new InvalidEntityException(validationErrors, Tag.class);
-          }
+      Optional<Tag> tag = tagRepository.findByName(tagName);
+      if (tag.isEmpty()) {
+        Tag newTag = TagConverter.convertToEntity(tagDto);
+        newTag = tagRepository.create(newTag);
+        tags.add(newTag);
+      } else {
+        tags.add(tag.get());
+      }
+    }
 
-          Optional<Tag> tag = tagRepository.findByName(tagName);
-          long tagId;
-          if (tag.isEmpty()) {
-            Tag newTag = TagConverter.convertToEntity(tagDto);
-            tagId = tagRepository.create(newTag);
-          } else {
-            tagId = tag.get().getId();
-          }
-
-          tagDto.setId(tagId);
-
-          giftCertificateRepository.addCertificateTagRelation(certificateId, tagId);
-        });
+    certificate.setTags(tags);
   }
 }

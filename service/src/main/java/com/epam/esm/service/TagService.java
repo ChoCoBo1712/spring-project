@@ -13,6 +13,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -58,6 +59,7 @@ public class TagService {
    * @throws EntityAlreadyExistsException in case when tag with specified name already exists
    * @return {@link TagDto} object that represents created tag
    */
+  @Transactional
   public TagDto create(TagDto tagDto) {
     Tag tag = TagConverter.convertToEntity(tagDto);
 
@@ -81,6 +83,7 @@ public class TagService {
    * @param id tag id
    * @throws EntityNotFoundException in case when tag with this id does not exist
    */
+  @Transactional
   public void delete(long id) {
     Tag tag = tagRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
     tagRepository.delete(tag);

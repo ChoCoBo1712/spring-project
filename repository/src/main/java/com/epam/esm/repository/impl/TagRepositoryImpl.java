@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,8 @@ public class TagRepositoryImpl implements TagRepository {
 
   @Override
   public List<Tag> findAll() {
-    return entityManager.createQuery("SELECT tag FROM Tag tag", Tag.class).getResultList();
+    TypedQuery<Tag> query = entityManager.createQuery("SELECT tag FROM Tag tag", Tag.class);
+    return query.getResultList();
   }
 
   @Override
@@ -31,12 +33,10 @@ public class TagRepositoryImpl implements TagRepository {
 
   @Override
   public Optional<Tag> findByName(String name) {
-    Tag tag =
-        entityManager
+    return entityManager
             .createQuery("SELECT tag FROM Tag tag WHERE tag.name = ?1", Tag.class)
             .setParameter(1, name)
-            .getSingleResult();
-    return Optional.ofNullable(tag);
+            .getResultStream().findFirst();
   }
 
   @Override

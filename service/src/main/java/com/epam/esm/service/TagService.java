@@ -71,9 +71,8 @@ public class TagService {
       throw new EntityAlreadyExistsException();
     }
 
-    long tagId = tagRepository.create(tag);
-    tagDto.setId(tagId);
-    return tagDto;
+    tag = tagRepository.create(tag);
+    return TagConverter.convertToDto(tag);
   }
 
   /**
@@ -83,10 +82,7 @@ public class TagService {
    * @throws EntityNotFoundException in case when tag with this id does not exist
    */
   public void delete(long id) {
-    boolean deleted = tagRepository.delete(id);
-
-    if (!deleted) {
-      throw new EntityNotFoundException(id);
-    }
+    Tag tag = tagRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+    tagRepository.delete(tag);
   }
 }

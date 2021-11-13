@@ -1,6 +1,7 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,44 +35,25 @@ public interface GiftCertificateRepository {
   Optional<GiftCertificate> findById(long id);
 
   /**
-   * Add relation of existing certificate and tag to many-to-many db table.
-   *
-   * @param certificateId certificate id
-   * @param tagId tag id
-   */
-  void addCertificateTagRelation(long certificateId, long tagId);
-
-  /**
-   * Remove relation of existing certificate and tag from many-to-many db table.
-   *
-   * @param certificateId certificate id
-   * @param tagId tag id
-   */
-  void removeCertificateTagRelation(long certificateId, long tagId);
-
-  /**
    * Create a new certificate in the storage.
    *
    * @param certificate {@link GiftCertificate} instance
-   * @return unique id of the saved {@link GiftCertificate}
+   * @return {@link GiftCertificate} instance
    */
-  long create(GiftCertificate certificate);
+  GiftCertificate create(GiftCertificate certificate);
 
   /**
    * Update an existing certificate in the storage.
    *
    * @param certificate {@link GiftCertificate} instance
-   * @return {@code true} if {@link GiftCertificate} existed and was updated, otherwise {@code
-   *     false}
+   * @return {@link GiftCertificate} instance
    */
-  boolean update(GiftCertificate certificate);
+  GiftCertificate update(GiftCertificate certificate);
 
   /**
    * Delete an existing certificate from the storage.
    *
-   * @param id certificate id
-   * @return {@code true} if {@link GiftCertificate} existed and was deleted, otherwise {@code
-   *     false}
+   * @param certificate {@link GiftCertificate} instance
    */
-  boolean delete(long id);
+  void delete(GiftCertificate certificate);
 }

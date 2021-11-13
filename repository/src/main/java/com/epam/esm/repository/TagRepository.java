@@ -38,26 +38,17 @@ public interface TagRepository {
   Optional<Tag> findByName(String name);
 
   /**
-   * Retrieve all tags attached to a certain certificate.
-   *
-   * @param certificateId certificate id
-   * @return list of {@link Tag} attached to the {@link GiftCertificate}
-   */
-  Set<Tag> findByCertificateId(long certificateId);
-
-  /**
    * Create a new tag in the storage.
    *
    * @param tag {@link Tag} instance
-   * @return unique id of the saved {@link Tag}
+   * @return {@link Tag} instance
    */
-  long create(Tag tag);
+  Tag create(Tag tag);
 
   /**
    * Delete an existing tag from the storage.
    *
-   * @param id tag id
-   * @return {@code true} if {@link Tag} existed and was deleted, otherwise {@code false}
+   * @param tag {@link Tag} instance
    */
-  boolean delete(long id);
+  void delete(Tag tag);
 }

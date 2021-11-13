@@ -9,18 +9,13 @@ allprojects {
     }
 
     dependencies {
-        implementation 'org.springframework:spring-core:5.3.12'
-        implementation 'org.springframework:spring-webmvc:5.3.12'
-        implementation 'org.springframework:spring-jdbc:5.3.12'
-
-        implementation 'javax.servlet:javax.servlet-api:4.0.1'
+        implementation 'org.springframework.boot:spring-boot-starter-web:2.5.6'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.5.6'
 
         implementation 'org.projectlombok:lombok:1.18.22'
         annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-        testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.1'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
     }
 
     test {

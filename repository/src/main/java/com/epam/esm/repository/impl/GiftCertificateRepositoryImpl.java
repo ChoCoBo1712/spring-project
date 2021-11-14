@@ -109,7 +109,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
               : criteriaBuilder.desc(certificate.get(paramOrderPair[0]));
       orders.add(order);
     }
-
     return orders;
   }
 }

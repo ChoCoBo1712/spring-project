@@ -50,7 +50,7 @@ public class GiftCertificateService {
    * Retrieve certificates according to specified parameters. All parameters are optional, so if
    * they are not present, all certificates will be retrieved.
    *
-   * @param tagName String specifying {@code Tag} entity name value
+   * @param tagNames String array specifying {@code Tag} entity name value
    * @param name String specifying {@code GiftCertificate} entity name value
    * @param description String specifying {@code GiftCertificate} entity description value
    * @param sort String specifying sorting params
@@ -58,14 +58,14 @@ public class GiftCertificateService {
    * @return list of {@link GiftCertificateDto}
    */
   public List<GiftCertificateDto> filter(
-      String tagName, String name, String description, String[] sort) {
+          String[] tagNames, String name, String description, String[] sort) {
     boolean valid = sortArrayValidator.validate(sort);
     if (!valid) {
       throw new InvalidSortStringException();
     }
 
     List<GiftCertificate> giftCertificates =
-        giftCertificateRepository.filter(tagName, name, description, sort);
+        giftCertificateRepository.filter(tagNames, name, description, sort);
     return giftCertificates.stream()
         .map(
             giftCertificate -> {

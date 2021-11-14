@@ -50,7 +50,7 @@ public class GiftCertificateController {
    */
   @GetMapping
   public ResponseEntity<List<GiftCertificateDto>> getCertificates(
-      @RequestParam(required = false) String tagName,
+      @RequestParam(required = false) String[] tagName,
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String description,
       @RequestParam(required = false) String[] sort) {

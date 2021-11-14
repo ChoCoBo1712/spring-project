@@ -17,13 +17,13 @@ public interface GiftCertificateRepository {
    * Retrieve certificates according to specified parameters. All parameters are optional, so if
    * they are not present, all certificates will be retrieved
    *
-   * @param tagName tag name (can be partly qualified)
+   * @param tagNames tag name array (can be partly qualified)
    * @param name certificate name (can be partly qualified)
    * @param description certificate description (can be partly qualified)
    * @param sort String specifying sorting params
    * @return list of {@link GiftCertificate}
    */
-  List<GiftCertificate> filter(String tagName, String name, String description, String[] sort);
+  List<GiftCertificate> filter(String[] tagNames, String name, String description, String[] sort);
 
   /**
    * Retrieve certificate by its unique id.

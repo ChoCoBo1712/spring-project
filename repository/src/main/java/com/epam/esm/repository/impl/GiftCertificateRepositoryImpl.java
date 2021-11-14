@@ -1,6 +1,7 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.GiftCertificateRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -28,27 +31,37 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
   @Override
   public List<GiftCertificate> filter(
-          String tagName, String name, String description, String[] sort) {
+          String[] tagNames, String name, String description, String[] sort) {
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<GiftCertificate> criteriaQuery =
         criteriaBuilder.createQuery(GiftCertificate.class);
-    Root<GiftCertificate> certificate = criteriaQuery.from(GiftCertificate.class);
+    Root<GiftCertificate> certificateRoot = criteriaQuery.from(GiftCertificate.class);
 
-    if (tagName != null) {
-//      Predicate tagNamePredicate = criteriaBuilder.isMember(tagName, certificate.get("tags"));
-//      criteriaQuery.where(tagNamePredicate);
+    if (tagNames != null) {
+      CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
+      Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
+      tagCriteriaQuery.select(tagRoot).where(tagRoot.get("name").in((Object[]) tagNames));
+      List<Tag> tags = entityManager.createQuery(tagCriteriaQuery).getResultList();
+
+      Expression<Set<Tag>> certificateTagNames = certificateRoot.get("tags");
+      Predicate tagNamePredicate = criteriaBuilder.conjunction();
+      for (Tag tag : tags) {
+        tagNamePredicate = criteriaBuilder.and(tagNamePredicate,
+                criteriaBuilder.isMember(tag, certificateTagNames));
+      }
+      criteriaQuery.where(tagNamePredicate);
     }
     if (name != null) {
-      Predicate namePredicate = criteriaBuilder.like(certificate.get("name"), "%" + name + "%");
+      Predicate namePredicate = criteriaBuilder.like(certificateRoot.get("name"), "%" + name + "%");
       criteriaQuery.where(namePredicate);
     }
     if (description != null) {
       Predicate descriptionPredicate =
-          criteriaBuilder.like(certificate.get("description"), "%" + description + "%");
+          criteriaBuilder.like(certificateRoot.get("description"), "%" + description + "%");
       criteriaQuery.where(descriptionPredicate);
     }
     if (sort != null) {
-      List<Order> orders = buildSortOrders(sort, criteriaBuilder, certificate);
+      List<Order> orders = buildSortOrders(sort, criteriaBuilder, certificateRoot);
       criteriaQuery.orderBy(orders);
     }
 

@@ -3,7 +3,8 @@ package com.epam.esm.handler;
 import com.epam.esm.exception.EntityAlreadyExistsException;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.InvalidEntityException;
-import com.epam.esm.exception.InvalidSortStringException;
+import com.epam.esm.exception.InvalidPaginationParamsException;
+import com.epam.esm.exception.InvalidSortParamsException;
 import com.epam.esm.validator.ValidationError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,20 +55,22 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
   private static final String INVALID_PARAMS_MESSAGE = "invalid_params";
   private static final String INVALID_MEDIA_TYPE_MESSAGE = "invalid_media_type";
   private static final String INVALID_BODY_FORMAT_MESSAGE = "invalid_body_format";
-  private static final String INVALID_SORT_PARAMETER_MESSAGE = "invalid_sort_parameter";
+  private static final String INVALID_SORT_PARAMS_MESSAGE = "invalid_sort_params";
   private static final String INVALID_ARGUMENT_TYPE_MESSAGE = "invalid_argument_type";
+  private static final String INVALID_PAGINATION_PARAMS_MESSAGE = "invalid_pagination_params";
 
   private static final int RESOURCE_NOT_FOUND_CODE = 40401;
   private static final int ENTITY_NOT_FOUND_CODE = 40402;
   private static final int INTERNAL_SERVER_ERROR_CODE = 50001;
   private static final int ENTITY_ALREADY_EXISTS_CODE = 40901;
-  private static final int INVALID_SORT_PARAMETER_CODE = 40001;
+  private static final int INVALID_SORT_PARAMS_CODE = 40001;
   private static final int INVALID_ENTITY_CODE = 40002;
   private static final int METHOD_NOT_ALLOWED_CODE = 40501;
   private static final int INVALID_PARAMS_CODE = 40003;
   private static final int INVALID_MEDIA_TYPE_CODE = 41501;
   private static final int INVALID_BODY_FORMAT_CODE = 40004;
   private static final int INVALID_ARGUMENT_TYPE_CODE = 40005;
+  private static final int INVALID_PAGINATION_PARAMS_CODE = 40006;
 
   private static final String ERROR_MESSAGE = "errorMessage";
   private static final String ERRORS = "errors";
@@ -109,11 +112,18 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     return buildErrorResponseEntity(ENTITY_ALREADY_EXISTS_CODE, errorMessage, CONFLICT);
   }
 
-  @ExceptionHandler(InvalidSortStringException.class)
-  public ResponseEntity<Object> handleInvalidSortString() {
-    logger.error("Current sort string is invalid");
-    String errorMessage = getErrorMessageFromSource(INVALID_SORT_PARAMETER_MESSAGE);
-    return buildErrorResponseEntity(INVALID_SORT_PARAMETER_CODE, errorMessage, BAD_REQUEST);
+  @ExceptionHandler(InvalidSortParamsException.class)
+  public ResponseEntity<Object> handleInvalidSortParams() {
+    logger.error("Current sort params are invalid");
+    String errorMessage = getErrorMessageFromSource(INVALID_SORT_PARAMS_MESSAGE);
+    return buildErrorResponseEntity(INVALID_SORT_PARAMS_CODE, errorMessage, BAD_REQUEST);
+  }
+
+  @ExceptionHandler(InvalidPaginationParamsException.class)
+  public ResponseEntity<Object> handleInvalidPaginationParams() {
+    logger.error("Current pagination params are invalid");
+    String errorMessage = getErrorMessageFromSource(INVALID_PAGINATION_PARAMS_MESSAGE);
+    return buildErrorResponseEntity(INVALID_PAGINATION_PARAMS_CODE, errorMessage, BAD_REQUEST);
   }
 
   @ExceptionHandler(InvalidEntityException.class)

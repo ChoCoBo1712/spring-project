@@ -6,7 +6,9 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.EntityAlreadyExistsException;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.InvalidEntityException;
+import com.epam.esm.exception.InvalidPaginationParamsException;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.validator.PaginationValidator;
 import com.epam.esm.validator.TagValidator;
 import com.epam.esm.validator.ValidationError;
 import lombok.NonNull;
@@ -29,14 +31,21 @@ public class TagService {
   private final TagRepository tagRepository;
   @NonNull
   private final TagValidator tagValidator;
+  @NonNull
+  private final PaginationValidator paginationValidator;
 
   /**
    * Retrieve all tags.
    *
    * @return list of {@link TagDto}
    */
-  public List<TagDto> findAll() {
-    return tagRepository.findAll().stream()
+  public List<TagDto> findAll(int page, int size) {
+    boolean valid = paginationValidator.validate(page, size);
+    if (!valid) {
+      throw new InvalidPaginationParamsException();
+    }
+
+    return tagRepository.findAll(page, size).stream()
             .map(TagConverter::convertToDto)
             .toList();
   }

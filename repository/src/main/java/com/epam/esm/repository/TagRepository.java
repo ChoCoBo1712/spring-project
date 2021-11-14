@@ -17,9 +17,11 @@ public interface TagRepository {
   /**
    * Retrieve all tags from storage.
    *
+   * @param page int number of page
+   * @param size int of page size
    * @return list of {@link Tag}
    */
-  List<Tag> findAll();
+  List<Tag> findAll(int page, int size);
 
   /**
    * Retrieve tag by its unique id.

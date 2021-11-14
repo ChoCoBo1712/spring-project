@@ -8,7 +8,7 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.InvalidEntityException;
-import com.epam.esm.exception.InvalidSortStringException;
+import com.epam.esm.exception.InvalidSortParamsException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.validator.GiftCertificateValidator;
@@ -54,14 +54,14 @@ public class GiftCertificateService {
    * @param name String specifying {@code GiftCertificate} entity name value
    * @param description String specifying {@code GiftCertificate} entity description value
    * @param sort String specifying sorting params
-   * @throws InvalidSortStringException in case when sort param is not specified right
+   * @throws InvalidSortParamsException in case when sort param is not specified right
    * @return list of {@link GiftCertificateDto}
    */
   public List<GiftCertificateDto> filter(
           String[] tagNames, String name, String description, String[] sort) {
     boolean valid = sortArrayValidator.validate(sort);
     if (!valid) {
-      throw new InvalidSortStringException();
+      throw new InvalidSortParamsException();
     }
 
     List<GiftCertificate> giftCertificates =

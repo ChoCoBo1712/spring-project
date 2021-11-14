@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -41,8 +42,11 @@ public class TagController {
    * @return JSON {@link ResponseEntity} object that contains list of {@link TagDto}
    */
   @GetMapping
-  public ResponseEntity<List<TagDto>> getTags() {
-    List<TagDto> tagDtos = tagService.findAll();
+  public ResponseEntity<List<TagDto>> getTags(
+          @RequestParam(required = false, defaultValue = "1") int page,
+          @RequestParam(required = false, defaultValue = "10") int size
+  ) {
+    List<TagDto> tagDtos = tagService.findAll(page, size);
     return new ResponseEntity<>(tagDtos, OK);
   }
 

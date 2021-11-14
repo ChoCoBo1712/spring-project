@@ -6,7 +6,7 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.InvalidEntityException;
-import com.epam.esm.exception.InvalidSortStringException;
+import com.epam.esm.exception.InvalidSortParamsException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.validator.GiftCertificateValidator;
@@ -106,7 +106,7 @@ public class GiftCertificateServiceTest {
     when(sortArrayValidator.validate(sort)).thenReturn(false);
 
     assertThrows(
-        InvalidSortStringException.class,
+        InvalidSortParamsException.class,
         () -> certificateService.filter(tagName, name, description, sort));
   }
 

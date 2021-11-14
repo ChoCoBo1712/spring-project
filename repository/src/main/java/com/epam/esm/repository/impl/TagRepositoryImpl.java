@@ -20,8 +20,12 @@ public class TagRepositoryImpl implements TagRepository {
   }
 
   @Override
-  public List<Tag> findAll() {
-    TypedQuery<Tag> query = entityManager.createQuery("SELECT tag FROM Tag tag", Tag.class);
+  public List<Tag> findAll(int page, int size) {
+    TypedQuery<Tag> query =
+        entityManager
+            .createQuery("SELECT tag FROM Tag tag", Tag.class)
+            .setFirstResult(size * (page - 1))
+            .setMaxResults(size);
     return query.getResultList();
   }
 
@@ -34,9 +38,10 @@ public class TagRepositoryImpl implements TagRepository {
   @Override
   public Optional<Tag> findByName(String name) {
     return entityManager
-            .createQuery("SELECT tag FROM Tag tag WHERE tag.name = ?1", Tag.class)
-            .setParameter(1, name)
-            .getResultStream().findFirst();
+        .createQuery("SELECT tag FROM Tag tag WHERE tag.name = ?1", Tag.class)
+        .setParameter(1, name)
+        .getResultStream()
+        .findFirst();
   }
 
   @Override

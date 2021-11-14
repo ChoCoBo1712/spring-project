@@ -3,7 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.InvalidEntityException;
-import com.epam.esm.exception.InvalidSortStringException;
+import com.epam.esm.exception.InvalidSortParamsException;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +45,7 @@ public class GiftCertificateController {
    * @param name String specifying {@code GiftCertificate} entity name value
    * @param description String specifying {@code GiftCertificate} entity description value
    * @param sort String specifying sorting params
-   * @throws InvalidSortStringException in case when sort param is not specified right
+   * @throws InvalidSortParamsException in case when sort param is not specified right
    * @return JSON {@link ResponseEntity} object that contains list of {@link GiftCertificateDto}
    */
   @GetMapping

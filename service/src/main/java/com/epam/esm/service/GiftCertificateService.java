@@ -8,10 +8,12 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.InvalidEntityException;
+import com.epam.esm.exception.InvalidPaginationParamsException;
 import com.epam.esm.exception.InvalidSortParamsException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.validator.GiftCertificateValidator;
+import com.epam.esm.validator.PaginationValidator;
 import com.epam.esm.validator.SortArrayValidator;
 import com.epam.esm.validator.TagValidator;
 import com.epam.esm.validator.ValidationError;
@@ -45,6 +47,8 @@ public class GiftCertificateService {
   private final TagValidator tagValidator;
   @NonNull
   private final SortArrayValidator sortArrayValidator;
+  @NonNull
+  private final PaginationValidator paginationValidator;
 
   /**
    * Retrieve certificates according to specified parameters. All parameters are optional, so if
@@ -58,14 +62,16 @@ public class GiftCertificateService {
    * @return list of {@link GiftCertificateDto}
    */
   public List<GiftCertificateDto> filter(
-          String[] tagNames, String name, String description, String[] sort) {
-    boolean valid = sortArrayValidator.validate(sort);
-    if (!valid) {
+          String[] tagNames, String name, String description, String[] sort, int page, int pageSize) {
+    if (!sortArrayValidator.validate(sort)) {
       throw new InvalidSortParamsException();
+    }
+    if (!paginationValidator.validate(page, pageSize)) {
+      throw new InvalidPaginationParamsException();
     }
 
     List<GiftCertificate> giftCertificates =
-        giftCertificateRepository.filter(tagNames, name, description, sort);
+        giftCertificateRepository.filter(tagNames, name, description, sort, page, pageSize);
     return giftCertificates.stream()
         .map(
             giftCertificate -> {

@@ -53,9 +53,12 @@ public class GiftCertificateController {
       @RequestParam(required = false) String[] tagName,
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String description,
-      @RequestParam(required = false) String[] sort) {
+      @RequestParam(required = false) String[] sort,
+      @RequestParam(required = false, defaultValue = "1") int page,
+      @RequestParam(required = false, defaultValue = "10") int pageSize
+      ) {
     List<GiftCertificateDto> certificateDtos =
-        giftCertificateService.filter(tagName, name, description, sort);
+        giftCertificateService.filter(tagName, name, description, sort, page, pageSize);
     return new ResponseEntity<>(certificateDtos, OK);
   }
 

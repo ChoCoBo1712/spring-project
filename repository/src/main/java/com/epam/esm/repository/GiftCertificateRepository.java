@@ -23,7 +23,8 @@ public interface GiftCertificateRepository {
    * @param sort String specifying sorting params
    * @return list of {@link GiftCertificate}
    */
-  List<GiftCertificate> filter(String[] tagNames, String name, String description, String[] sort);
+  List<GiftCertificate> filter(
+      String[] tagNames, String name, String description, String[] sort, int page, int pageSize);
 
   /**
    * Retrieve certificate by its unique id.

@@ -31,7 +31,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
   @Override
   public List<GiftCertificate> filter(
-      String[] tagNames, String name, String description, String[] sort) {
+      String[] tagNames, String name, String description, String[] sort, int page, int pageSize) {
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<GiftCertificate> criteriaQuery =
         criteriaBuilder.createQuery(GiftCertificate.class);
@@ -54,8 +54,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
       List<Order> orders = buildSortOrders(sort, criteriaBuilder, certificateRoot);
       criteriaQuery.orderBy(orders);
     }
-
-    TypedQuery<GiftCertificate> query = entityManager.createQuery(criteriaQuery);
+    TypedQuery<GiftCertificate> query =
+        entityManager
+            .createQuery(criteriaQuery)
+            .setFirstResult(pageSize * (page - 1))
+            .setMaxResults(pageSize);
     return query.getResultList();
   }
 
@@ -81,7 +84,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     entityManager.remove(certificate);
   }
 
-  private Predicate getTagNamePredicate(Object[] tagNames, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> certificateRoot) {
+  private Predicate getTagNamePredicate(
+      Object[] tagNames, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> certificateRoot) {
     CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
     Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
     tagCriteriaQuery.where(tagRoot.get("name").in(tagNames));
@@ -91,8 +95,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     Predicate tagNamePredicate = criteriaBuilder.conjunction();
     for (Tag tag : tags) {
       tagNamePredicate =
-              criteriaBuilder.and(
-                      tagNamePredicate, criteriaBuilder.isMember(tag, certificateTagNames));
+          criteriaBuilder.and(tagNamePredicate, criteriaBuilder.isMember(tag, certificateTagNames));
     }
     return tagNamePredicate;
   }

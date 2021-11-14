@@ -44,9 +44,9 @@ public class TagController {
   @GetMapping
   public ResponseEntity<List<TagDto>> getTags(
           @RequestParam(required = false, defaultValue = "1") int page,
-          @RequestParam(required = false, defaultValue = "10") int size
+          @RequestParam(required = false, defaultValue = "10") int pageSize
   ) {
-    List<TagDto> tagDtos = tagService.findAll(page, size);
+    List<TagDto> tagDtos = tagService.findAll(page, pageSize);
     return new ResponseEntity<>(tagDtos, OK);
   }
 

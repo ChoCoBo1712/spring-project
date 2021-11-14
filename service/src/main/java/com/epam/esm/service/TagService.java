@@ -39,13 +39,12 @@ public class TagService {
    *
    * @return list of {@link TagDto}
    */
-  public List<TagDto> findAll(int page, int size) {
-    boolean valid = paginationValidator.validate(page, size);
-    if (!valid) {
+  public List<TagDto> findAll(int page, int pageSize) {
+    if (!paginationValidator.validate(page, pageSize)) {
       throw new InvalidPaginationParamsException();
     }
 
-    return tagRepository.findAll(page, size).stream()
+    return tagRepository.findAll(page, pageSize).stream()
             .map(TagConverter::convertToDto)
             .toList();
   }

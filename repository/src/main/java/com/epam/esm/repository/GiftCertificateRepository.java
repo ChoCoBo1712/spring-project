@@ -1,7 +1,6 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Tag;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,7 @@ public interface GiftCertificateRepository {
    * @param sort String specifying sorting params
    * @return list of {@link GiftCertificate}
    */
-  List<GiftCertificate> filter(String tagName, String name, String description, String sort);
+  List<GiftCertificate> filter(String tagName, String name, String description, String[] sort);
 
   /**
    * Retrieve certificate by its unique id.

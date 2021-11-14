@@ -62,7 +62,7 @@ public class GiftCertificateService {
    * @return list of {@link GiftCertificateDto}
    */
   public List<GiftCertificateDto> filter(
-      String tagName, String name, String description, String sort) {
+      String tagName, String name, String description, String[] sort) {
     boolean valid = sortStringValidator.validate(sort);
     if (!valid) {
       throw new InvalidSortStringException();

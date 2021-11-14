@@ -28,15 +28,15 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
   @Override
   public List<GiftCertificate> filter(
-      String tagName, String name, String description, String sort) {
+          String tagName, String name, String description, String[] sort) {
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<GiftCertificate> criteriaQuery =
         criteriaBuilder.createQuery(GiftCertificate.class);
     Root<GiftCertificate> certificate = criteriaQuery.from(GiftCertificate.class);
 
     if (tagName != null) {
-      Predicate tagNamePredicate = criteriaBuilder.isMember(tagName, certificate.get("tags"));
-      criteriaQuery.where(tagNamePredicate);
+//      Predicate tagNamePredicate = criteriaBuilder.isMember(tagName, certificate.get("tags"));
+//      criteriaQuery.where(tagNamePredicate);
     }
     if (name != null) {
       Predicate namePredicate = criteriaBuilder.like(certificate.get("name"), "%" + name + "%");
@@ -79,11 +79,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
   }
 
   private List<Order> buildSortOrders(
-      String sort, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> certificate) {
+      String[] sort, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> certificate) {
     List<Order> orders = new ArrayList<>();
-    String[] sortParams = sort.split(",");
 
-    for (String sortParam : sortParams) {
+    for (String sortParam : sort) {
       String[] paramOrderPair = sortParam.split("\\.");
       Order order =
           Objects.equals(paramOrderPair[1], "asc")

@@ -31,7 +31,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
   @Override
   public List<GiftCertificate> filter(
-          String[] tagNames, String name, String description, String[] sort) {
+      String[] tagNames, String name, String description, String[] sort) {
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<GiftCertificate> criteriaQuery =
         criteriaBuilder.createQuery(GiftCertificate.class);
@@ -46,8 +46,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
       Expression<Set<Tag>> certificateTagNames = certificateRoot.get("tags");
       Predicate tagNamePredicate = criteriaBuilder.conjunction();
       for (Tag tag : tags) {
-        tagNamePredicate = criteriaBuilder.and(tagNamePredicate,
-                criteriaBuilder.isMember(tag, certificateTagNames));
+        tagNamePredicate =
+            criteriaBuilder.and(
+                tagNamePredicate, criteriaBuilder.isMember(tag, certificateTagNames));
       }
       criteriaQuery.where(tagNamePredicate);
     }

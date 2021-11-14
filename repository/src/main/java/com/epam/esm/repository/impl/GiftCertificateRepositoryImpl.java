@@ -38,18 +38,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     Root<GiftCertificate> certificateRoot = criteriaQuery.from(GiftCertificate.class);
 
     if (tagNames != null) {
-      CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
-      Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
-      tagCriteriaQuery.where(tagRoot.get("name").in((Object[]) tagNames));
-      List<Tag> tags = entityManager.createQuery(tagCriteriaQuery).getResultList();
-
-      Expression<Set<Tag>> certificateTagNames = certificateRoot.get("tags");
-      Predicate tagNamePredicate = criteriaBuilder.conjunction();
-      for (Tag tag : tags) {
-        tagNamePredicate =
-            criteriaBuilder.and(
-                tagNamePredicate, criteriaBuilder.isMember(tag, certificateTagNames));
-      }
+      Predicate tagNamePredicate = getTagNamePredicate(tagNames, criteriaBuilder, certificateRoot);
       criteriaQuery.where(tagNamePredicate);
     }
     if (name != null) {
@@ -90,6 +79,22 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
   @Override
   public void delete(GiftCertificate certificate) {
     entityManager.remove(certificate);
+  }
+
+  private Predicate getTagNamePredicate(Object[] tagNames, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> certificateRoot) {
+    CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
+    Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
+    tagCriteriaQuery.where(tagRoot.get("name").in(tagNames));
+    List<Tag> tags = entityManager.createQuery(tagCriteriaQuery).getResultList();
+
+    Expression<Set<Tag>> certificateTagNames = certificateRoot.get("tags");
+    Predicate tagNamePredicate = criteriaBuilder.conjunction();
+    for (Tag tag : tags) {
+      tagNamePredicate =
+              criteriaBuilder.and(
+                      tagNamePredicate, criteriaBuilder.isMember(tag, certificateTagNames));
+    }
+    return tagNamePredicate;
   }
 
   private List<Order> buildSortOrders(

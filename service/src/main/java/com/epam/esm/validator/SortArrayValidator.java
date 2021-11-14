@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 @Component
-public class SortStringValidator {
+public class SortArrayValidator {
 
   private static final String SORT_REGEX =
       "(((?i)name(?-i)|(?i)lastUpdateDate(?-i)).((?i)asc(?-i)|(?i)desc(?-i)))";

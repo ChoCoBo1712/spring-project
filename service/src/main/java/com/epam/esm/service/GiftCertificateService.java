@@ -12,23 +12,19 @@ import com.epam.esm.exception.InvalidSortStringException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.validator.GiftCertificateValidator;
-import com.epam.esm.validator.SortStringValidator;
+import com.epam.esm.validator.SortArrayValidator;
 import com.epam.esm.validator.TagValidator;
 import com.epam.esm.validator.ValidationError;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This service class encapsulated business logic related to {@link GiftCertificate} entity.
@@ -48,7 +44,7 @@ public class GiftCertificateService {
   @NonNull
   private final TagValidator tagValidator;
   @NonNull
-  private final SortStringValidator sortStringValidator;
+  private final SortArrayValidator sortArrayValidator;
 
   /**
    * Retrieve certificates according to specified parameters. All parameters are optional, so if
@@ -63,7 +59,7 @@ public class GiftCertificateService {
    */
   public List<GiftCertificateDto> filter(
       String tagName, String name, String description, String[] sort) {
-    boolean valid = sortStringValidator.validate(sort);
+    boolean valid = sortArrayValidator.validate(sort);
     if (!valid) {
       throw new InvalidSortStringException();
     }

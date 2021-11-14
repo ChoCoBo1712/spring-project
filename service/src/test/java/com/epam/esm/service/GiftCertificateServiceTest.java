@@ -10,7 +10,7 @@ import com.epam.esm.exception.InvalidSortStringException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.validator.GiftCertificateValidator;
-import com.epam.esm.validator.SortStringValidator;
+import com.epam.esm.validator.SortArrayValidator;
 import com.epam.esm.validator.TagValidator;
 import com.epam.esm.validator.ValidationError;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,7 +51,7 @@ public class GiftCertificateServiceTest {
 
   @Mock private TagRepository tagRepository;
 
-  @Mock private SortStringValidator sortStringValidator;
+  @Mock private SortArrayValidator sortArrayValidator;
 
   @Mock private GiftCertificateValidator certificateValidator;
 
@@ -88,7 +88,7 @@ public class GiftCertificateServiceTest {
     when(certificateRepository.filter(tagName, name, description, sort))
         .thenReturn(certificateList);
     when(tagRepository.findByCertificateId(certificateId)).thenReturn(provideTags());
-    when(sortStringValidator.validate(sort)).thenReturn(true);
+    when(sortArrayValidator.validate(sort)).thenReturn(true);
 
     List<GiftCertificateDto> actualDtoList =
         certificateService.filter(tagName, name, description, sort);
@@ -103,7 +103,7 @@ public class GiftCertificateServiceTest {
     String name = "certificate";
     String description = "description";
     String sort = "nameasc,lastUpdateDate.desc";
-    when(sortStringValidator.validate(sort)).thenReturn(false);
+    when(sortArrayValidator.validate(sort)).thenReturn(false);
 
     assertThrows(
         InvalidSortStringException.class,

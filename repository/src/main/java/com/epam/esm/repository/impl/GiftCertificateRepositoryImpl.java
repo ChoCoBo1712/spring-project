@@ -40,7 +40,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     if (tagNames != null) {
       CriteriaQuery<Tag> tagCriteriaQuery = criteriaBuilder.createQuery(Tag.class);
       Root<Tag> tagRoot = tagCriteriaQuery.from(Tag.class);
-      tagCriteriaQuery.select(tagRoot).where(tagRoot.get("name").in((Object[]) tagNames));
+      tagCriteriaQuery.where(tagRoot.get("name").in((Object[]) tagNames));
       List<Tag> tags = entityManager.createQuery(tagCriteriaQuery).getResultList();
 
       Expression<Set<Tag>> certificateTagNames = certificateRoot.get("tags");

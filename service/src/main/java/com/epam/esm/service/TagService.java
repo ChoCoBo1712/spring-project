@@ -36,7 +36,9 @@ public class TagService {
    * @return list of {@link TagDto}
    */
   public List<TagDto> findAll() {
-    return tagRepository.findAll().stream().map(TagConverter::convertToDto).toList();
+    return tagRepository.findAll().stream()
+            .map(TagConverter::convertToDto)
+            .toList();
   }
 
   /**

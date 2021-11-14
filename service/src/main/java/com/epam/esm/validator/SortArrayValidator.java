@@ -2,7 +2,6 @@ package com.epam.esm.validator;
 
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 @Component

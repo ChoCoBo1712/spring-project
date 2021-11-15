@@ -30,16 +30,16 @@ public class SpringFoxConfig {
   @Bean
   public Docket swaggerCertificatesApi20() {
     return new Docket(DocumentationType.SWAGGER_2)
-            .groupName("certificates-api-v2.0")
-            .select()
-            .apis(RequestHandlerSelectors.any())
-            .paths(PathSelectors.regex("/api/v2.0.*"))
-            .build()
-            .apiInfo(
-                    new ApiInfoBuilder()
-                            .version("2.0")
-                            .title("Certificates API")
-                            .description("Documentation for Certificates API v2.0")
-                            .build());
+        .groupName("certificates-api-v2.0")
+        .select()
+        .apis(RequestHandlerSelectors.any())
+        .paths(PathSelectors.regex("/api/v2.0.*"))
+        .build()
+        .apiInfo(
+            new ApiInfoBuilder()
+                .version("2.0")
+                .title("Certificates API")
+                .description("Documentation for Certificates API v2.0")
+                .build());
   }
 }

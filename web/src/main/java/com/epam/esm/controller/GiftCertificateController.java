@@ -28,7 +28,7 @@ import static org.springframework.http.HttpStatus.OK;
  * @author Evgeniy Sokolchik
  */
 @RestController
-@RequestMapping("/api/certificates")
+@RequestMapping("/v1.1/certificates")
 public class GiftCertificateController {
 
   private final GiftCertificateService giftCertificateService;

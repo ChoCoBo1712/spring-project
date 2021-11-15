@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.OK;
  * @author Evgeniy Sokolchik
  */
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/v1.1/tags")
 public class TagController {
 
   private final TagService tagService;
